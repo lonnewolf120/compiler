@@ -1,0 +1,194 @@
+Inserted at position 27, 0
+Inserted at position 12, 0
+Inserted at position 3, 0
+Inserted at position 27, 1
+Inserted at position 23, 0
+Already Exists
+0-->
+1-->
+2-->
+3--> < (, LPAREN > 
+4-->
+5-->
+6-->
+7-->
+8-->
+9-->
+10->
+11->
+12-> < main, FUNCTION > 
+13->
+14->
+15->
+16->
+17->
+18->
+19->
+20->
+21->
+22->
+23-> < {, LCURL > 
+24->
+25->
+26->
+27-> < int, KEYWORD >  < ), RPARAN > 
+28->
+Not Found
+Inserted at position 4, 0
+Inserted at position 26, 0
+Found at 4, 0
+Not Found
+Inserted at position 4, 1
+0-->
+1-->
+2-->
+3--> < (, LPAREN > 
+4--> < foo, FUNCTION >  < 123, NUMBER > 
+5-->
+6-->
+7-->
+8-->
+9-->
+10->
+11->
+12-> < main, FUNCTION > 
+13->
+14->
+15->
+16->
+17->
+18->
+19->
+20->
+21->
+22->
+23-> < {, LCURL > 
+24->
+25->
+26-> < i, IDENTIFIER > 
+27-> < int, KEYWORD >  < ), RPARAN > 
+28->
+Doesn't Exist
+Delete from 4,1
+0-->
+1-->
+2-->
+3--> < (, LPAREN > 
+4--> < foo, FUNCTION > 
+5-->
+6-->
+7-->
+8-->
+9-->
+10->
+11->
+12-> < main, FUNCTION > 
+13->
+14->
+15->
+16->
+17->
+18->
+19->
+20->
+21->
+22->
+23-> < {, LCURL > 
+24->
+25->
+26-> < i, IDENTIFIER > 
+27-> < int, KEYWORD >  < ), RPARAN > 
+28->
+Inserted at position 4, 1
+Inserted at position 4, 2
+0-->
+1-->
+2-->
+3--> < (, LPAREN > 
+4--> < foo, FUNCTION >  < 231, NUMBER >  < 105, NUMBER > 
+5-->
+6-->
+7-->
+8-->
+9-->
+10->
+11->
+12-> < main, FUNCTION > 
+13->
+14->
+15->
+16->
+17->
+18->
+19->
+20->
+21->
+22->
+23-> < {, LCURL > 
+24->
+25->
+26-> < i, IDENTIFIER > 
+27-> < int, KEYWORD >  < ), RPARAN > 
+28->
+Delete from 4,1
+Inserted at position 4, 2
+0-->
+1-->
+2-->
+3--> < (, LPAREN > 
+4--> < foo, FUNCTION >  < 105, NUMBER >  < 204, NUMBER > 
+5-->
+6-->
+7-->
+8-->
+9-->
+10->
+11->
+12-> < main, FUNCTION > 
+13->
+14->
+15->
+16->
+17->
+18->
+19->
+20->
+21->
+22->
+23-> < {, LCURL > 
+24->
+25->
+26-> < i, IDENTIFIER > 
+27-> < int, KEYWORD >  < ), RPARAN > 
+28->
+Delete from 4,2
+Inserted at position 4, 2
+0-->
+1-->
+2-->
+3--> < (, LPAREN > 
+4--> < foo, FUNCTION >  < 105, NUMBER >  < 123, NUMBER > 
+5-->
+6-->
+7-->
+8-->
+9-->
+10->
+11->
+12-> < main, FUNCTION > 
+13->
+14->
+15->
+16->
+17->
+18->
+19->
+20->
+21->
+22->
+23-> < {, LCURL > 
+24->
+25->
+26-> < i, IDENTIFIER > 
+27-> < int, KEYWORD >  < ), RPARAN > 
+28->

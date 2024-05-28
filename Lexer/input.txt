@@ -1,0 +1,8 @@
+count count2 count
+int 
+45 45
+asdas
+12412 12412
+$atr $atr
+
+print
