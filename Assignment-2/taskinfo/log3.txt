@@ -1,0 +1,78 @@
+Line No: 1 Token <INT> Lexeme int found 
+Line No: 1 Token <ID> Lexeme main found 
+0 -->
+1 -->
+2 -->
+3 -->
+4 -->
+5 --><ID,main>
+6 -->
+7 -->
+8 -->
+9 -->
+Line No: 1 Token <LPAREN> Lexeme ( found 
+Line No: 1 Token <RPAREN> Lexeme ) found 
+Line No: 1 Token <LCURL> Lexeme { found 
+Line No: 2 Token <INT> Lexeme int found 
+Line No: 2 Token <ID> Lexeme a found 
+0 -->
+1 -->
+2 -->
+3 -->
+4 -->
+5 --><ID,main>
+6 -->
+7 --><ID,a>
+8 -->
+9 -->
+Line No: 2 Token <SEMICOLON> Lexeme ; found 
+Line No: 3 Token <IF> Lexeme if found 
+Line No: 3 Token <LPAREN> Lexeme ( found 
+Line No: 3 Token <ID> Lexeme a found 
+a variable already exists
+Line No: 3 Token <RELOP> Lexeme == found 
+Line No: 3 Token <CONST_INT> Lexeme 2 found 
+0 --><CONST_INT,2>
+1 -->
+2 -->
+3 -->
+4 -->
+5 --><ID,main>
+6 -->
+7 --><ID,a>
+8 -->
+9 -->
+Line No: 3 Token <RPAREN> Lexeme ) found 
+Line No: 3 Token <LCURL> Lexeme { found 
+Line No: 4 Token <INT> Lexeme int found 
+Line No: 4 Token <ID> Lexeme b found 
+0 --><CONST_INT,2>
+1 -->
+2 -->
+3 -->
+4 -->
+5 --><ID,main>
+6 -->
+7 --><ID,a>
+8 --><ID,b>
+9 -->
+Line No: 4 Token <SEMICOLON> Lexeme ; found 
+Line No: 5 Token <CHAR> Lexeme char found 
+Line No: 5 Token <ID> Lexeme b found 
+b variable already exists
+Line No: 5 Token <SEMICOLON> Lexeme ; found 
+Line No: 6 Token <RCURL> Lexeme } found 
+Line No: 7 Token <RETURN> Lexeme return found 
+Line No: 7 Token <CONST_INT> Lexeme 0 found 
+0 --><CONST_INT,2>
+1 -->
+2 -->
+3 -->
+4 -->
+5 --><ID,main>
+6 -->
+7 --><ID,a>
+8 --><ID,b><CONST_INT,0>
+9 -->
+Line No: 7 Token <SEMICOLON> Lexeme ; found 
+Line No: 8 Token <RCURL> Lexeme } found 

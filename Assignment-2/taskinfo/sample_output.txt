@@ -1,0 +1,1 @@
+<INT><ID, x><ASSIGNOP, =><CONST_INT, 5><SEMICOLON, ;>
