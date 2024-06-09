@@ -1,0 +1,30 @@
+int x   = 5
+
+
+
+;int main(){
+	int a,b,abdc1, 12abcd;
+	`
+	a = 5;
+	b = a * 3.5140;
+	b = 1E10.7;
+	a=a+1;
+	char ch ='a'; // initializing
+	/*hello abc
+	def
+	ghi*/
+	return 0;
+}	1E2.345
+12 abcd
+''
+#include
+efgh
+ijk
+int main(){
+	int a;
+	if(a == 2){
+		int b;
+		char b;
+	}
+	return 0;
+}

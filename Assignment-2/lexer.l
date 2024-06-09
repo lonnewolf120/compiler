@@ -3,125 +3,97 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
-#include "symbol_table.h"
-int cnt=0;
+#include "symboltable.h"
 
 SymbolTable st;
 
 %}
 
-start      [a-zA-Z]
-ID         {start}[a-zA-Z0-9]*
+s-cmt      "//"([^\n\\]*\\\n)*[^\n]*\n
+m-cmt      "/*"(.|\n)*?"*/"
+start      [a-zA-Z_]
+ID         {start}[a-z_A-Z0-9]*
 NUM        [0-9]+
-FLOAT      {NUM}.{NUM}(E(-)?)?{NUM}
+WID        {NUM}{ID}
+FLOAT      ({NUM})?\.{NUM}(E(-)?)?{NUM}
+WFLOAT     {NUM}E{NUM}\.{NUM}
+CHAR       \'[^\']\'   
 delim      [ \t\n]
+
 %%
-print      { st.print(); }
 
-\n         { cnt++; }
-"if"       { fprintf(yyout, "<IF, %s>\n", yytext); 
-             st.insert("IF", yytext); }
-"else"     { fprintf(yyout, "<ELSE, %s>\n", yytext); 
-             st.insert("ELSE", yytext); }
-"for"      { fprintf(yyout, "<FOR, %s>\n", yytext); 
-             st.insert("FOR", yytext); }
-"while"    { fprintf(yyout, "<WHILE, %s>\n", yytext); 
-             st.insert("WHILE", yytext); }
-"do"       { fprintf(yyout, "<DO, %s>\n", yytext); 
-             st.insert("DO", yytext); }
-"break"    { fprintf(yyout, "<BREAK, %s>\n", yytext); 
-             st.insert("BREAK", yytext); }
-"int"      { fprintf(yyout, "<INT, %s>\n", yytext); 
-             st.insert("INT", yytext); }
-"char"     { fprintf(yyout, "<CHAR, %s>\n", yytext); 
-             st.insert("CHAR", yytext); }
-"float"    { fprintf(yyout, "<FLOAT, %s>\n", yytext); 
-             st.insert("FLOAT", yytext); }
-"double"   { fprintf(yyout, "<DOUBLE, %s>\n", yytext); 
-             st.insert("DOUBLE", yytext); }
-"void"     { fprintf(yyout, "<VOID, %s>\n", yytext); 
-             st.insert("VOID", yytext); }
-"return"   { fprintf(yyout, "<RETURN, %s>\n", yytext); 
-             st.insert("RETURN", yytext); }
-"switch"   { fprintf(yyout, "<SWITCH, %s>\n", yytext); 
-             st.insert("SWITCH", yytext); }
-"case"     { fprintf(yyout, "<CASE, %s>\n", yytext); 
-             st.insert("CASE", yytext); }
-"default"  { fprintf(yyout, "<DEFAULT, %s>\n", yytext); 
-             st.insert("DEFAULT", yytext); }
-"continue" { fprintf(yyout, "<CONTINUE, %s>\n", yytext); 
-             st.insert("CONTINUE", yytext); }
+{m-cmt}    { ffcout("COMMENT", yytext); }
+{s-cmt}    { ffcout("COMMENT", yytext); }
+\n         { line_cnt++; }
+"if"       { ffcout("IF", "if"); fcout("IF"); }
+"else"     { ffcout("ELSE", "else"); fcout("ELSE"); }
+"for"      { ffcout("FOR", "for"); fcout("FOR"); }
+"while"    { ffcout("WHILE", "while"); fcout("WHILE"); }
+"do"       { ffcout("DO", "do"); fcout("DO"); }
+"break"    { ffcout("BREAK", "break"); fcout("BREAK"); }
+"int"      { ffcout("INT", "int"); fcout("INT"); }
+"char"     { ffcout("CHAR", "char"); fcout("CHAR"); }
+"float"    { ffcout("FLOAT", "float"); fcout("FLOAT"); }
+"double"   { ffcout("DOUBLE", "double"); fcout("DOUBLE"); }
+"void"     { ffcout("VOID", "void"); fcout("VOID"); }
+"return"   { ffcout("RETURN", "return"); fcout("RETURN"); }
+"switch"   { ffcout("SWITCH", "switch"); fcout("SWITCH"); }
+"case"     { ffcout("CASE", "case"); fcout("CASE"); }
+"default"  { ffcout("DEFAULT", "default"); fcout("DEFAULT"); }
+"continue" { ffcout("CONTINUE", "continue"); fcout("CONTINUE"); }
+
+{NUM}      { st.insert(yytext, "CONST_INT"); fcout("CONST_INT", yytext); }
+{FLOAT}    { st.insert(yytext, "CONST_FLOAT"); fcout("CONST_FLOAT", yytext); }
+{ID}       { st.insert(yytext, "ID"); fcout("ID", yytext); }
+{CHAR}     { 
+    string ch = string(1, yytext[1]);
+    st.insert(ch, "CONST_CHAR"); fcout("CONST_CHAR", ch); }
+
+"+"        { ffcout("ADDOP", yytext); fcout("ADDOP", yytext); }
+"*"        { ffcout("MULOP", yytext); fcout("MULOP", yytext); }
+"/"        { ffcout("MULOP", yytext); fcout("MULOP", yytext); }
+"%"        { ffcout("MULOP", yytext); fcout("MULOP", yytext); }
+"++"       { ffcout("INCOP", yytext); fcout("INCOP", yytext); }
+"--"       { ffcout("INCOP", yytext); fcout("INCOP", yytext); }
+"<"        { ffcout("RELOP", yytext); fcout("RELOP", yytext); }
+"<="       { ffcout("RELOP", yytext); fcout("RELOP", yytext); }
+">"        { ffcout("RELOP", yytext); fcout("RELOP", yytext); }
+">="       { ffcout("RELOP", yytext); fcout("RELOP", yytext); }
+"=="       { ffcout("RELOP", yytext); fcout("RELOP", yytext); }
+"!="       { ffcout("RELOP", yytext); fcout("RELOP", yytext); }
+"="        { ffcout("ASSIGNOP", yytext); fcout("ASSIGNOP", yytext); }
+"&&"       { ffcout("LOGICOP", yytext); fcout("LOGICOP", yytext); }
+"||"       { ffcout("LOGICOP", yytext); fcout("LOGICOP", yytext); }
+"!"        { ffcout("NOT", yytext); fcout("NOT", yytext); }
+"("        { ffcout("LPAREN", yytext); fcout("LPAREN", yytext); }
+")"        { ffcout("RPAREN", yytext); fcout("RPAREN", yytext); }
+"{"        { ffcout("LCURL", yytext); fcout("LCURL", yytext); }
+"}"        { ffcout("RCURL", yytext); fcout("RCURL", yytext); }
+"["        { ffcout("LTHIRD", yytext); fcout("LTHIRD", yytext); }
+"]"        { ffcout("RTHIRD", yytext); fcout("RTHIRD", yytext); }
+","        { ffcout("COMMA", yytext); fcout("COMMA", yytext); }
+";"        { ffcout("SEMICOLON", yytext); fcout("SEMICOLON", yytext); }
 
 
-{NUM}      { fprintf(yyout, "<CONST_INT, %s>\n", yytext); 
-             st.insert("CONST_INT", yytext); }
-{FLOAT}    { fprintf(yyout, "<CONST_FLOAT, %s>\n", yytext); 
-                st.insert("CONST_FLOAT", yytext); }
-{ID}       { fprintf(yyout, "<IDENTIFIER, %s>\n", yytext); 
-             st.insert("IDENTIFIER", yytext); }
-
-"+"        { fprintf(yyout, "<ADDOP, %s>\n", yytext); 
-             st.insert("ADDOP", yytext); }
-"*"        { fprintf(yyout, "<MULOP, %s>\n", yytext); 
-             st.insert("MULOP", yytext); }
-"/"        { fprintf(yyout, "<MULOP, %s>\n", yytext); 
-             st.insert("MULOP", yytext); }
-"%"        { fprintf(yyout, "<MULOP, %s>\n", yytext); 
-             st.insert("MULOP", yytext); }
-"++"       { fprintf(yyout, "<INCOP, %s>\n", yytext); 
-             st.insert("INCOP", yytext); }
-"--"       { fprintf(yyout, "<INCOP, %s>\n", yytext); 
-             st.insert("INCOP", yytext); }
-"<"        { fprintf(yyout, "<RELOP, %s>\n", yytext); 
-             st.insert("RELOP", yytext); }
-"<="       { fprintf(yyout, "<RELOP, %s>\n", yytext); 
-             st.insert("RELOP", yytext); }
-">"        { fprintf(yyout, "<RELOP, %s>\n", yytext); 
-             st.insert("RELOP", yytext); }
-">="       { fprintf(yyout, "<RELOP, %s>\n", yytext); 
-             st.insert("RELOP", yytext); }
-"=="       { fprintf(yyout, "<RELOP, %s>\n", yytext); 
-             st.insert("RELOP", yytext); }
-"!="       { fprintf(yyout, "<RELOP, %s>\n", yytext); 
-             st.insert("RELOP", yytext); }
-"="        { fprintf(yyout, "<ASSIGNOP, %s>\n", yytext); 
-             st.insert("ASSIGNOP", yytext); }
-"&&"       { fprintf(yyout, "<LOGICOP, %s>\n", yytext); 
-             st.insert("LOGICOP", yytext); }
-"||"       { fprintf(yyout, "<LOGICOP, %s>\n", yytext); 
-             st.insert("LOGICOP", yytext); }
-"!"        { fprintf(yyout, "<NOT, %s>\n", yytext); 
-             st.insert("NOT", yytext); }
-"("        { fprintf(yyout, "<LPAREN, %s>\n", yytext); 
-             st.insert("LPAREN", yytext); }
-")"        { fprintf(yyout, "<RPAREN, %s>\n", yytext); 
-             st.insert("RPAREN", yytext); }
-"{"        { fprintf(yyout, "<LCURL, %s>\n", yytext); 
-             st.insert("LCURL", yytext); }
-"}"        { fprintf(yyout, "<RCURL, %s>\n", yytext); 
-             st.insert("RCURL", yytext); }
-"["        { fprintf(yyout, "<LTHIRD, %s>\n", yytext); 
-             st.insert("LTHIRD", yytext); }
-"]"        { fprintf(yyout, "<RTHIRD, %s>\n", yytext); 
-             st.insert("RTHIRD", yytext); }
-","        { fprintf(yyout, "<COMMA, %s>\n", yytext); 
-             st.insert("COMMA", yytext); }
-";"        { fprintf(yyout, "<SEMICOLON, %s>\n", yytext); 
-             st.insert("SEMICOLON", yytext); }
-
+\'\'           { yyerror("Empty character constant "+string(yytext)); }
+{WID}      { yyerror("Invalid prefix on ID or invalid suffix on Number " + std::string(yytext)); }
+{WFLOAT}   { yyerror("Ill formed number " + std::string(yytext)); }
 {delim}    { /* Ignore whitespace */ }
-
-.          { fprintf(yyout, "OTHER\n"); }
-
+.          { yyerror("unrecognized character: " + std::string(yytext)); }
 %%
 
-int main() {
+
+int main(int argc, char *argv[]) {
     clearOutput();
-    yyin = fopen("input.txt", "r");
-    yyout = fopen("out.txt", "w");
+
+//    if(argc!=2){cerr<<"error taking input from file";}
+//    char* msg; cin>>msg;
+    yyin = fopen("input.txt","r");
+
     yylex();
-    fprintf(yyout,"Total lines: %d\n", cnt);
+    //fprintf(yyout,"Total lines: %d\n", line_cnt);
+    logf(("\nTotal errors: " + to_string(error_cnt)));
     fclose(yyin);
-    fclose(yyout);
+    //fclose(yyout);
     return 0;
 }

@@ -1,0 +1,24 @@
+{
+    "files.associations": {
+        "string": "c",
+        "iosfwd": "cpp",
+        "any": "c",
+        "array": "c",
+        "charconv": "c",
+        "chrono": "c",
+        "compare": "c",
+        "functional": "c",
+        "memory_resource": "c",
+        "ratio": "c",
+        "scoped_allocator": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c",
+        "variant": "c",
+        "typeindex": "c",
+        "typeinfo": "c",
+        "random": "c",
+        "deque": "c",
+        "vector": "c"
+    }
+}

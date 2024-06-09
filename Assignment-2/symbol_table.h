@@ -2,25 +2,54 @@
 using namespace std;
 const int roll=24, table_size = 29; //24+5
 
-void fcout(string out){
-    // cout<<out;
+int line_cnt=1, error_cnt=0;
+
+void fcout(string out) {
     ofstream output;
-    output.open("output.txt", ios::app);
+    output.open("202214024_token.txt", ios::app);
     if (!output.is_open()) {
         cerr << "Error opening file.\n";
     }
-    output<<out;
+    output << out;
     output.close();
 }
 
-void clearOutput(){
+void ffcout(string token, string symbol){
     ofstream output;
-    output.open("output.txt", ios::trunc);
+    output.open("202214024_log.txt", ios::app);
+    if (!output.is_open()) {
+        cerr << "Error opening file.\n";
+    }
+    output << "Line No. " << line_cnt <<": ";
+    output << "Token <"<< token << "> Lexeme " << symbol << " found\n";
+    output.close();
+}
+
+void yyerror(string msg) {
+    error_cnt++;
+    ofstream output;
+    output.open("202214024_log.txt", ios::app);
+    if (!output.is_open()) {
+        cerr << "Error opening file.\n";
+    }    
+    output << "Error at Line No. " << line_cnt <<": ";
+    output << msg;
+    output.close();
+}
+void clearOutput() {
+    ofstream output;
+    output.open("202214024_log.txt", ios::trunc);
+    if (!output.is_open()) {
+        cerr << "Error delete file contents.\n";
+    }
+    output.close();
+    output.open("202214024_token.txt", ios::trunc);
     if (!output.is_open()) {
         cerr << "Error delete file contents.\n";
     }
     output.close();
 }
+
 
 class Symbol_Info
 {
@@ -33,15 +62,21 @@ public:
     {
         this->name = "";
         this->type = "";
-        this->next = nullptr;
-        this->prev = nullptr;
+        this->next = NULL;
+        this->prev = NULL;
+    }
+    Symbol_Info(string n)
+    {
+        this->name = n;
+        this->next = NULL;
+        this->prev = NULL;
     }
     Symbol_Info(string n, string t)
     {
         this->name = n;
         this->type = t;
-        this->next = nullptr;
-        this->prev = nullptr;
+        this->next = NULL;
+        this->prev = NULL;
     }
     string getName() { return name; }
     string getType() { return type; }
@@ -57,7 +92,7 @@ public:
     SymbolTable()
     {
         for (int i = 0; i < table_size; ++i)
-            snf[i] = nullptr;
+            snf[i] = NULL;
     }
 
     int hash(string name)
@@ -66,6 +101,32 @@ public:
         for (int i = 0; name[i] ; i++) s+=name[i];
         
         return (s * (roll)) % table_size;
+    }
+    
+    void print()
+    {
+        ofstream op;
+        op.open("202214024_log.txt", ios::app);
+        for (int i = 0; i < table_size; ++i)
+        {
+            fcout(to_string(i) + ((i<10)?"-->":"->"));
+            op << string((i) + ((i<10)?"-->":"->"));
+            if (snf[i])
+            {
+                fcout(" < "+snf[i]->getName()+", "+  snf[i]->getType() + " > ");
+                op << string(" < "+snf[i]->getName()+", "+  snf[i]->getType() + " > ");
+                Symbol_Info *tmp = snf[i]->next;
+                int ind = 1;
+                while (tmp)
+                {
+                    fcout(" < " + tmp->getName() + ", " + tmp->getType() + " > ");
+                    tmp = tmp->next;
+                }
+            }
+            fcout("\n");
+            op<<"\n";
+        }
+            
     }
     void insert(Symbol_Info *newT)
     {
@@ -77,14 +138,13 @@ public:
         if (!snf[id])
         {
             snf[id] = new Symbol_Info(newName, newType);
-            //fcout("<"+ snf[id]->getName() + ", " +  snf[id]->getType() + ">");
-            fcout("Inserted at position "+ to_string(id) + ", 0\n");
+            // fcout("Inserted at position "+ to_string(id) + ", 0\n");
         }
         // chain
         else
         {
             // cout<<"Chaining index"<<endl;
-            Symbol_Info *tmp = snf[id], *newS=nullptr;
+            Symbol_Info *tmp = snf[id], *newS=NULL;
             if (tmp->getName() == newName && tmp->getType() == newType)
             {
                 fcout("Already Exists\n");
@@ -100,9 +160,45 @@ public:
             newS = new Symbol_Info(newName, newType);
             newS->prev = tmp;
             tmp->next = newS;
-            // fcout("<"+ snf[id]->getName() + ", " +  snf[id]->getType() + "> ");
-            fcout("Inserted at position "+ to_string(id) + ", " + to_string(the_ind) + "\n");
+            // fcout("Inserted at position "+ to_string(id) + ", " + to_string(the_ind) + "\n");
         }
+        
+        fcout("<"+ snf[id]->getName() + ", " +  snf[id]->getType() + ">");
+        print();
+    }
+    void insert(string newName)
+    {
+        int id = hash(newName), the_ind = 1;
+        //if null then make a new instance there
+        if (!snf[id])
+        {
+            snf[id] = new Symbol_Info(newName);
+            // fcout("Inserted at position "+ to_string(id) + ", 0\n");
+        }
+        // chain
+        else
+        {
+            // cout<<"Chaining index"<<endl;
+            Symbol_Info *tmp = snf[id], *newS=NULL;
+            if (tmp->getName() == newName)
+            {
+                fcout("Already Exists\n");
+                return;
+            }
+            //keep iterating until next elem is null
+            while (tmp->next)
+            {
+                // tmp->prev = tmp;
+                tmp = tmp->next;
+                the_ind++;
+            }
+            newS = new Symbol_Info(newName);
+            newS->prev = tmp;
+            tmp->next = newS;
+            // fcout("Inserted at position "+ to_string(id) + ", " + to_string(the_ind) + "\n");
+        }
+        fcout("<"+ newName + ">");
+        print();
     }
 void insert(string newName, string newType)
     {
@@ -111,14 +207,13 @@ void insert(string newName, string newType)
         if (!snf[id])
         {
             snf[id] = new Symbol_Info(newName, newType);
-            //fcout("<"+ snf[id]->getName() + ", " +  snf[id]->getType() + ">");
-            fcout("Inserted at position "+ to_string(id) + ", 0\n");
+            // fcout("Inserted at position "+ to_string(id) + ", 0\n");
         }
         // chain
         else
         {
             // cout<<"Chaining index"<<endl;
-            Symbol_Info *tmp = snf[id], *newS=nullptr;
+            Symbol_Info *tmp = snf[id], *newS=NULL;
             if (tmp->getName() == newName && tmp->getType() == newType)
             {
                 fcout("Already Exists\n");
@@ -134,9 +229,10 @@ void insert(string newName, string newType)
             newS = new Symbol_Info(newName, newType);
             newS->prev = tmp;
             tmp->next = newS;
-            // fcout("<"+ snf[id]->getName() + ", " +  snf[id]->getType() + "> ");
-            fcout("Inserted at position "+ to_string(id) + ", " + to_string(the_ind) + "\n");
+            // fcout("Inserted at position "+ to_string(id) + ", " + to_string(the_ind) + "\n");
         }
+        fcout("<"+ newName + ", " +  newType + ">");
+        print();
     }
 
     Symbol_Info *lookUp(string si, bool c=true)
@@ -168,30 +264,9 @@ void insert(string newName, string newType)
         else {
             fcout((c)?"Not Found\n":"Doesn't Exist\n");
         }
-        return nullptr;
+        return NULL;
     }
 
-    void print()
-    {
-        for (int i = 0; i < table_size; ++i)
-        {
-            fcout(to_string(i) + ((i<10)?"-->":"->"));
-            if (snf[i])
-            {
-                fcout(" < "+snf[i]->getName()+", "+  snf[i]->getType() + " > ");
-
-                Symbol_Info *tmp = snf[i]->next;
-                int ind = 1;
-                while (tmp)
-                {
-                    fcout(" < " + tmp->getName() + ", " + tmp->getType() + " > ");
-                    tmp = tmp->next;
-                }
-            }
-            fcout("\n");
-        }
-            
-    }
     void del(string toDel){
         Symbol_Info* tmp = lookUp(toDel, false);
         if(!tmp){
@@ -206,60 +281,14 @@ void insert(string newName, string newType)
             else {
                 snf[id]=tmp->next;
             }
-            // tmp->next = tmp->prev = nullptr;
+            // tmp->next = tmp->prev = NULL;
             delete tmp;
         }
         //handle when this is also the last node
         else{
-            tmp->prev->next = nullptr;
+            tmp->prev->next = NULL;
             delete tmp;
         }
     }
 
 };
-
-/*
-int main()
-{
-    cout<<"------- INPUT Taken from input.txt -------\n";
-    cout<<"------- OUTPUT will be in output.txt -------\n";
-    SymbolTable mySymbolTable;
-    clearOutput();
-    ifstream input;
-    input.open("input.txt");
-    char c;
-    while(input>>c)
-    {
-        if (c == 'I')
-        {
-            string n, t;  input >> n >> t;
-            // cout<<"INP: "<<n<<" "<<t<<endl;
-            Symbol_Info *tmp = new Symbol_Info(n, t);
-            mySymbolTable.insert(tmp);
-        }
-        else if (c == 'P')
-        {
-            mySymbolTable.print();
-        }
-        else if (c == 'L')
-        {
-            string c;
-            input >> c;
-            Symbol_Info *tmp = mySymbolTable.lookUp(c);
-            
-        }
-        else if (c == 'D')
-        {
-            string c;
-            input >> c;
-            mySymbolTable.del(c);
-        }
-        else
-        {
-            fcout("Invalid operation\n");
-            continue;
-        }
-    }
-    return 0;
-}
-*/
