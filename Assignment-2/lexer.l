@@ -87,8 +87,8 @@ int main(int argc, char *argv[]) {
     clearOutput();
 
 //    if(argc!=2){cerr<<"error taking input from file";}
-//    char* msg; cin>>msg;
-    yyin = fopen("input.txt","r");
+    char msg[20]; cin>>msg;
+    yyin = fopen(msg,"r");
 
     yylex();
     //fprintf(yyout,"Total lines: %d\n", line_cnt);
