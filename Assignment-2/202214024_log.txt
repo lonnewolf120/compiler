@@ -1,0 +1,596 @@
+Line No: 1 Token <INT> Lexeme int found
+Line No: 1 Token <ID> Lexeme x found
+0--><ID,x>
+1-->
+2-->
+3-->
+4-->
+5-->
+6-->
+7-->
+8-->
+9-->
+10->
+11->
+12->
+13->
+14->
+15->
+16->
+17->
+18->
+19->
+20->
+21->
+22->
+23->
+24->
+25->
+26->
+27->
+28->
+Line No: 1 Token <ASSIGNOP> Lexeme = found
+Line No: 1 Token <CONST_INT> Lexeme 5 found
+0--><ID,x>
+1-->
+2-->
+3-->
+4-->
+5-->
+6-->
+7-->
+8-->
+9-->
+10->
+11->
+12->
+13->
+14->
+15->
+16-><CONST_INT,5>
+17->
+18->
+19->
+20->
+21->
+22->
+23->
+24->
+25->
+26->
+27->
+28->
+Line No: 5 Token <SEMICOLON> Lexeme ; found
+Line No: 5 Token <INT> Lexeme int found
+Line No: 5 Token <ID> Lexeme main found
+0--><ID,x>
+1-->
+2-->
+3--><ID,main>
+4-->
+5-->
+6-->
+7-->
+8-->
+9-->
+10->
+11->
+12->
+13->
+14->
+15->
+16-><CONST_INT,5>
+17->
+18->
+19->
+20->
+21->
+22->
+23->
+24->
+25->
+26->
+27->
+28->
+Line No: 5 Token <LPAREN> Lexeme ( found
+Line No: 5 Token <RPAREN> Lexeme ) found
+Line No: 5 Token <LCURL> Lexeme { found
+Line No: 6 Token <INT> Lexeme int found
+Line No: 6 Token <ID> Lexeme a found
+0--><ID,x>
+1-->
+2-->
+3--><ID,main>
+4-->
+5-->
+6-->
+7-->
+8-->
+9-->
+10->
+11->
+12->
+13->
+14->
+15->
+16-><CONST_INT,5>
+17->
+18->
+19->
+20->
+21->
+22->
+23->
+24->
+25->
+26->
+27->
+28-><ID,a>
+Line No: 6 Token <COMMA> Lexeme , found
+Line No: 6 Token <ID> Lexeme b found
+0--><ID,x>
+1-->
+2-->
+3--><ID,main>
+4-->
+5-->
+6-->
+7-->
+8-->
+9-->
+10->
+11->
+12->
+13->
+14->
+15->
+16-><CONST_INT,5>
+17->
+18->
+19->
+20->
+21->
+22->
+23-><ID,b>
+24->
+25->
+26->
+27->
+28-><ID,a>
+Line No: 6 Token <COMMA> Lexeme , found
+Line No: 6 Token <ID> Lexeme abdc1 found
+0--><ID,x>
+1-->
+2-->
+3--><ID,main>
+4-->
+5-->
+6-->
+7-->
+8-->
+9--><ID,abdc1>
+10->
+11->
+12->
+13->
+14->
+15->
+16-><CONST_INT,5>
+17->
+18->
+19->
+20->
+21->
+22->
+23-><ID,b>
+24->
+25->
+26->
+27->
+28-><ID,a>
+Line No: 6 Token <COMMA> Lexeme , found
+Error at Line No: 6 Invalid prefix on ID or invalid suffix on Number 12abcd
+Line No: 6 Token <SEMICOLON> Lexeme ; found
+Error at Line No: 7 unrecognized character: `
+Line No: 8 Token <ID> Lexeme a found
+a variable already exists
+Line No: 8 Token <ASSIGNOP> Lexeme = found
+Line No: 8 Token <CONST_INT> Lexeme 5 found
+5 value already exists
+Line No: 8 Token <SEMICOLON> Lexeme ; found
+Line No: 9 Token <ID> Lexeme b found
+b variable already exists
+Line No: 9 Token <ASSIGNOP> Lexeme = found
+Line No: 9 Token <ID> Lexeme a found
+a variable already exists
+Line No: 9 Token <MULOP> Lexeme * found
+Line No: 9 Token <CONST_FLOAT> Lexeme 3.5140 found
+0--><ID,x>
+1-->
+2-->
+3--><ID,main>
+4-->
+5--><CONST_FLOAT,3.5140>
+6-->
+7-->
+8-->
+9--><ID,abdc1>
+10->
+11->
+12->
+13->
+14->
+15->
+16-><CONST_INT,5>
+17->
+18->
+19->
+20->
+21->
+22->
+23-><ID,b>
+24->
+25->
+26->
+27->
+28-><ID,a>
+Line No: 9 Token <SEMICOLON> Lexeme ; found
+Line No: 10 Token <ID> Lexeme b found
+b variable already exists
+Line No: 10 Token <ASSIGNOP> Lexeme = found
+Error at Line No: 10 Ill formed number 1E10.7
+Line No: 10 Token <SEMICOLON> Lexeme ; found
+Line No: 11 Token <ID> Lexeme a found
+a variable already exists
+Line No: 11 Token <ASSIGNOP> Lexeme = found
+Line No: 11 Token <ID> Lexeme a found
+a variable already exists
+Line No: 11 Token <ADDOP> Lexeme + found
+Line No: 11 Token <CONST_INT> Lexeme 1 found
+0--><ID,x>
+1-->
+2-->
+3--><ID,main>
+4-->
+5--><CONST_FLOAT,3.5140>
+6-->
+7--><CONST_INT,1>
+8-->
+9--><ID,abdc1>
+10->
+11->
+12->
+13->
+14->
+15->
+16-><CONST_INT,5>
+17->
+18->
+19->
+20->
+21->
+22->
+23-><ID,b>
+24->
+25->
+26->
+27->
+28-><ID,a>
+Line No: 11 Token <SEMICOLON> Lexeme ; found
+Line No: 12 Token <CHAR> Lexeme char found
+Line No: 12 Token <ID> Lexeme ch found
+0--><ID,x>
+1-->
+2-->
+3--><ID,main>
+4-->
+5--><CONST_FLOAT,3.5140>
+6-->
+7--><CONST_INT,1>
+8-->
+9--><ID,abdc1>
+10->
+11->
+12->
+13->
+14->
+15->
+16-><CONST_INT,5>
+17->
+18->
+19->
+20-><ID,ch>
+21->
+22->
+23-><ID,b>
+24->
+25->
+26->
+27->
+28-><ID,a>
+Line No: 12 Token <ASSIGNOP> Lexeme = found
+Line No: 12 Token <CONST_CHAR> Lexeme a found
+0--><ID,x>
+1-->
+2-->
+3--><ID,main>
+4-->
+5--><CONST_FLOAT,3.5140><CONST_CHAR,a>
+6-->
+7--><CONST_INT,1>
+8-->
+9--><ID,abdc1>
+10->
+11->
+12->
+13->
+14->
+15->
+16-><CONST_INT,5>
+17->
+18->
+19->
+20-><ID,ch>
+21->
+22->
+23-><ID,b>
+24->
+25->
+26->
+27->
+28-><ID,a>
+Line No: 12 Token <SEMICOLON> Lexeme ; found
+Line No: 12 Token <COMMENT> Lexeme // initializing
+ found
+Line No: 12 Token <COMMENT> Lexeme /*hello abc
+	def
+	ghi*/ found
+Line No: 13 Token <RETURN> Lexeme return found
+Line No: 13 Token <CONST_INT> Lexeme 0 found
+0--><ID,x>
+1-->
+2-->
+3--><ID,main>
+4-->
+5--><CONST_FLOAT,3.5140><CONST_CHAR,a>
+6-->
+7--><CONST_INT,1>
+8-->
+9--><ID,abdc1>
+10->
+11->
+12-><CONST_INT,0>
+13->
+14->
+15->
+16-><CONST_INT,5>
+17->
+18->
+19->
+20-><ID,ch>
+21->
+22->
+23-><ID,b>
+24->
+25->
+26->
+27->
+28-><ID,a>
+Line No: 13 Token <SEMICOLON> Lexeme ; found
+Line No: 14 Token <RCURL> Lexeme } found
+Error at Line No: 14 Ill formed number 1E2.345
+Line No: 15 Token <CONST_INT> Lexeme 12 found
+0--><ID,x>
+1-->
+2-->
+3--><ID,main>
+4-->
+5--><CONST_FLOAT,3.5140><CONST_CHAR,a>
+6-->
+7--><CONST_INT,1>
+8-->
+9--><ID,abdc1>
+10->
+11->
+12-><CONST_INT,0>
+13->
+14->
+15->
+16-><CONST_INT,5>
+17->
+18-><CONST_INT,12>
+19->
+20-><ID,ch>
+21->
+22->
+23-><ID,b>
+24->
+25->
+26->
+27->
+28-><ID,a>
+Line No: 15 Token <ID> Lexeme abcd found
+0--><ID,x>
+1-->
+2-->
+3--><ID,main>
+4-->
+5--><CONST_FLOAT,3.5140><CONST_CHAR,a>
+6-->
+7--><CONST_INT,1>
+8-->
+9--><ID,abdc1>
+10->
+11->
+12-><CONST_INT,0>
+13->
+14->
+15->
+16-><CONST_INT,5>
+17->
+18-><CONST_INT,12>
+19->
+20-><ID,ch>
+21->
+22-><ID,abcd>
+23-><ID,b>
+24->
+25->
+26->
+27->
+28-><ID,a>
+Error at Line No: 16 Empty character constant ''
+Error at Line No: 17 unrecognized character: #
+Line No: 17 Token <ID> Lexeme include found
+0--><ID,x>
+1-->
+2-->
+3--><ID,main><ID,include>
+4-->
+5--><CONST_FLOAT,3.5140><CONST_CHAR,a>
+6-->
+7--><CONST_INT,1>
+8-->
+9--><ID,abdc1>
+10->
+11->
+12-><CONST_INT,0>
+13->
+14->
+15->
+16-><CONST_INT,5>
+17->
+18-><CONST_INT,12>
+19->
+20-><ID,ch>
+21->
+22-><ID,abcd>
+23-><ID,b>
+24->
+25->
+26->
+27->
+28-><ID,a>
+Line No: 18 Token <ID> Lexeme efgh found
+0--><ID,x><ID,efgh>
+1-->
+2-->
+3--><ID,main><ID,include>
+4-->
+5--><CONST_FLOAT,3.5140><CONST_CHAR,a>
+6-->
+7--><CONST_INT,1>
+8-->
+9--><ID,abdc1>
+10->
+11->
+12-><CONST_INT,0>
+13->
+14->
+15->
+16-><CONST_INT,5>
+17->
+18-><CONST_INT,12>
+19->
+20-><ID,ch>
+21->
+22-><ID,abcd>
+23-><ID,b>
+24->
+25->
+26->
+27->
+28-><ID,a>
+Line No: 19 Token <ID> Lexeme ijk found
+0--><ID,x><ID,efgh>
+1-->
+2-->
+3--><ID,main><ID,include>
+4-->
+5--><CONST_FLOAT,3.5140><CONST_CHAR,a>
+6-->
+7--><CONST_INT,1>
+8-->
+9--><ID,abdc1>
+10->
+11->
+12-><CONST_INT,0>
+13->
+14->
+15->
+16-><CONST_INT,5>
+17->
+18-><CONST_INT,12>
+19->
+20-><ID,ch>
+21->
+22-><ID,abcd>
+23-><ID,b>
+24->
+25-><ID,ijk>
+26->
+27->
+28-><ID,a>
+Line No: 20 Token <INT> Lexeme int found
+Line No: 20 Token <ID> Lexeme main found
+main variable already exists
+Line No: 20 Token <LPAREN> Lexeme ( found
+Line No: 20 Token <RPAREN> Lexeme ) found
+Line No: 20 Token <LCURL> Lexeme { found
+Line No: 21 Token <INT> Lexeme int found
+Line No: 21 Token <ID> Lexeme a found
+a variable already exists
+Line No: 21 Token <SEMICOLON> Lexeme ; found
+Line No: 22 Token <IF> Lexeme if found
+Line No: 22 Token <LPAREN> Lexeme ( found
+Line No: 22 Token <ID> Lexeme a found
+a variable already exists
+Line No: 22 Token <RELOP> Lexeme == found
+Line No: 22 Token <CONST_INT> Lexeme 2 found
+0--><ID,x><ID,efgh>
+1-->
+2--><CONST_INT,2>
+3--><ID,main><ID,include>
+4-->
+5--><CONST_FLOAT,3.5140><CONST_CHAR,a>
+6-->
+7--><CONST_INT,1>
+8-->
+9--><ID,abdc1>
+10->
+11->
+12-><CONST_INT,0>
+13->
+14->
+15->
+16-><CONST_INT,5>
+17->
+18-><CONST_INT,12>
+19->
+20-><ID,ch>
+21->
+22-><ID,abcd>
+23-><ID,b>
+24->
+25-><ID,ijk>
+26->
+27->
+28-><ID,a>
+Line No: 22 Token <RPAREN> Lexeme ) found
+Line No: 22 Token <LCURL> Lexeme { found
+Line No: 23 Token <INT> Lexeme int found
+Line No: 23 Token <ID> Lexeme b found
+b variable already exists
+Line No: 23 Token <SEMICOLON> Lexeme ; found
+Line No: 24 Token <CHAR> Lexeme char found
+Line No: 24 Token <ID> Lexeme b found
+b variable already exists
+Line No: 24 Token <SEMICOLON> Lexeme ; found
+Line No: 25 Token <RCURL> Lexeme } found
+Line No: 26 Token <RETURN> Lexeme return found
+Line No: 26 Token <CONST_INT> Lexeme 0 found
+0 value already exists
+Line No: 26 Token <SEMICOLON> Lexeme ; found
+Line No: 27 Token <RCURL> Lexeme } found
+
+Total errors: 6
