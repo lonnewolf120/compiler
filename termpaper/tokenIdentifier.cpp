@@ -79,7 +79,7 @@ TOKEN getNumber()
             }
             else
             {
-                //FIXME: the other symbol can also be i, so can't use fail() here
+                // the other symbol can also be i, so can't use fail() here
                 // cout<<"from case 12"<<endl;
                 // fail();
                 retract();
