@@ -310,18 +310,19 @@ int main()
     cin>>inp;
     // inp = "123.456E-78+123.456Ei"; // Example input
     TOKEN token = getCN();
+    // if(token.getType()==1) cout<<"COMPLEX NUMBER IDENTIFIED!"<<endl;
     cout << "<";
     switch (token.getType())
     {
     case 0:
-        cout << "NUMBER,";
+        cout << "NUMBER, ";
         break;
     case 1:
-        cout << "COMPLEX-NUMBER,";
+        cout << "COMPLEX-NUMBER, ";
         break;
     default:
-        cout << "INAVLID-NUM,";
+        cout << "INAVLID-NUM, ";
     }
-    cout << token.getAttr() << ">" << endl;
+    cout <<inp[0]<< token.getAttr() << ">" << endl;
     return 0;
 }
