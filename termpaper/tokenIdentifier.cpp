@@ -171,6 +171,7 @@ TOKEN getCN(){
                         state = 23;
                     }
                     else if(tmp.getType()==TYPE::INVALID){
+                        cout<<"from case 22:"<<endl;
                         fail(1);
                     }
                 }
@@ -180,6 +181,7 @@ TOKEN getCN(){
                 if(c=='+'||c=='-') state = 24;
                 else if(c=='i') state = 26;
                 else {
+                cout<<"from case 23:"<<endl;
                     fail(2);
                 }
                 break;
@@ -194,6 +196,7 @@ TOKEN getCN(){
                     else if(tmp.getType()==TYPE::INVALID){
                         // retToken.setType(TYPE::INVALID);
                         // return retToken;
+                cout<<"from case:24 "<<endl;
                         fail(1);
                     }
                 }
@@ -204,6 +207,7 @@ TOKEN getCN(){
                     state = 26;
                 }
                 else{
+                cout<<"from case 25:"<<endl;
                     fail(2);
                 }
                 break;
@@ -214,13 +218,15 @@ TOKEN getCN(){
                 return retToken;
                 break;
             default:
+                cout<<"from default:"<<endl;
                 fail(2);
         }
     }
 }
 
 int main() {
-    inp = "123.456E-78+123.456E-78i";  // Example input
+    cin>>inp;
+    // inp = "123.456E-78+123.456E-78i";  // Example input
     TOKEN token = getCN();
     cout << "attribute: " << token.getAttr() << ", Type: " << token.getType() << endl;
     return 0;
