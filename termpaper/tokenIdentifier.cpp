@@ -122,6 +122,7 @@ TOKEN getNumber()
             }
             else
             {
+                cout<<"from case 14:"<<endl;
                 fail();
             }
             break;
@@ -159,6 +160,7 @@ TOKEN getNumber()
             }
             else
             {
+                cout<<"from case 16:"<<endl;
                 fail();
             }
             break;
@@ -171,6 +173,7 @@ TOKEN getNumber()
             }
             else
             {
+                cout<<"from case 17:"<<endl;
                 fail();
             }
             break;
@@ -190,6 +193,7 @@ TOKEN getNumber()
             }
             break;
         default:
+            cout<<"from default case:"<<endl;
             fail();
         }
     }
