@@ -87,7 +87,9 @@ int main(int argc, char *argv[]) {
     clearOutput();
 
 //    if(argc!=2){cerr<<"error taking input from file";}
+    cout<<"Enter the input file name: ";
     char msg[20]; cin>>msg;
+    cout<<"\nThe output will show in 202214024_log.txt & 202214024_token.txt\n\n";
     yyin = fopen(msg,"r");
 
     yylex();
