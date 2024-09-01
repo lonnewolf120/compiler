@@ -1,0 +1,25 @@
+
+float fun()
+{
+a=b+c;
+}
+
+
+int main(){ int a=100;
+float x,y;
+double d;
+int c[10];
+a=(a+b)*b;
+a=a+b*b;
+a=a&&b;
+int p, x[100];
+a=10;
+m=m*n+((2/i)%10)
+c=a+b/3;
+d=2+66-9.6;
+e=3.4+6.5;
+int b;
+int d,f
+int x[19];
+
+}
