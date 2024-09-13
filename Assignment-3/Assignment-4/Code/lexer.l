@@ -3,79 +3,11 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include "symboltable.h"
 #include "parser.tab.h"
-int line_cnt = 1;
 
-void fcout(string token, string symbol="") {
-    ofstream op2;
-    op2.open("token.txt", ios::app);
-    if (!op2.is_open()) {
-        cerr << "Error opening file.\n";
-    }
-    (symbol=="")?op2<<"<"<<token<<">": op2<<"<"<<token<<", "<<symbol<<">";
-    op2.close();
-}
-
-void logf(string msg=""){
-    ofstream output;
-    output.open("log_errpr.txt", ios::app);
-    output<<msg;
-    output.close();
-}
-/*explanation for ffcout:
-int c is used to say how text will be added into output, 
-0 for normal <Token, Lexeme> found
-other values for "already exists" type of stuff...
-*/
-void ffcout(string token, string symbol="", int c=0){
-    ofstream output;
-    output.open("log_error.txt", ios::app);
-    if (!output.is_open()) {
-        cerr << "Error opening log_error.txt file.\n";
-    }
-    
-    output << "Line No: " << line_cnt << " ";
-    output << "Token <" << token << "> Lexeme " << symbol << " found\n";
-    if(c){
-        if (token=="ID") {
-        output << symbol << " variable already exists\n";
-        } else if (token=="CONST_INT" || token=="CONST_FLOAT") {
-            output << symbol << " value already exists\n";
-        } else if (token=="CONST_CHAR") {
-            output << symbol << " character already exists\n";
-        }
-    } 
-    output.close();
-}
-
-void yyerror(string msg) {
-    error_cnt++;
-    ofstream output;
-    output.open("log_error.txt", ios::app);
-    if (!output.is_open()) {
-        cerr << "Error opening file.\n";
-    }    
-    output << "Error at Line No: " << line_cnt <<" ";
-    output << msg << "\n";
-    output.close();
-}
-
-void clearOutput() {
-    ofstream output;
-    output.open("log_error.txt", ios::trunc);
-    if (!output.is_open()) {
-        cerr << "Error delete file contents.\n";
-    }
-    output.close();
-    output.open("token.txt", ios::trunc);
-    if (!output.is_open()) {
-        cerr << "Error delete file contents.\n";
-    }
-    output.close();
-}
-
-
-
+SymbolTable st;
+#define YYSTYPE Symbol_Info 
 %}
 
 scmt      "//"([^\n\\]*\\\n)*[^\n]*\n
@@ -148,17 +80,15 @@ delim      [ \t\n]
     yylval.dvar = atof(yytext); return CONST_FLOAT; 
 }
 {ID}       { 
-    // st.insert(yytext, "CONST_INT"); 
+    st.insert(yytext, "CONST_INT"); 
     fcout("CONST_INT", yytext);  
     yylval.cvar = yytext; return ID; 
 }
 {CHAR}     { 
     string ch = string(1, yytext[1]);
-    // st.insert(ch, "CONST_CHAR"); 
-    fcout("CONST_CHAR", ch); 
+    st.insert(ch, "CONST_CHAR"); fcout("CONST_CHAR", ch); 
     return yytext[1];
 }
-
 
 \'\'           { yyerror("Empty character constant "+string(yytext)); }
 {WID}      { yyerror("Invalid prefix on ID or invalid suffix on Number " + std::string(yytext)); }
@@ -166,3 +96,4 @@ delim      [ \t\n]
 {delim}    { /* Ignore whitespace */ }
 .          { yyerror("unrecognized character: " + std::string(yytext)); }
 %%
+

@@ -1,0 +1,10 @@
+0--><x identifier> <d identifier> <n identifier>
+1--><y identifier> <e identifier>
+2--><p identifier> <f identifier>
+3-->
+4-->
+5--><main identifier> <i identifier>
+6-->
+7--><fun identifier> <a identifier>
+8--><b identifier>
+9--><c identifier> <m identifier>
