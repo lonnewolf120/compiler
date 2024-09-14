@@ -31,17 +31,6 @@ delim      [ \t\n]
 "int"      { return INT; }
 "float"    { return FLOAT; }
 "double"   { return DOUBLE; }
-"char"     { return CHAR; }
-
-
-"if"       { return IF; }
-"else"     { return ELSE; }
-"while"    { return WHILE; }
-"for"      { return FOR; }
-"return"   { return RETURN; }
-"break"    { return BREAK; }
-"continue" { return CONTINUE; }
-"void"     { return VOID; }
 
 "{"         {return LCURL;}
 "}"         {return RCURL;}
@@ -67,7 +56,6 @@ delim      [ \t\n]
 "-"         {return SUBOP;}
 "*"         {return MULOP;}
 "/"         {return DIVOP;}
-"%"         {return MULOP;}
 
 
 
@@ -84,6 +72,6 @@ delim      [ \t\n]
       return ID; 
 }
 
-[\n] { line_cnt++; }
+[\n] { line_cnt++; return NEWLINE;}
 
 %%
