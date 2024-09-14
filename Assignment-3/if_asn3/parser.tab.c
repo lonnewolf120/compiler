@@ -80,10 +80,10 @@ extern int line_cnt;
 // int line_cnt=1, error_cnt=0;
 
 // ofstream outFile("logerror.txt");  
-SymbolTable st;
-
 
 int yylex();
+
+SymbolTable st;
 
 void fcout(string token, string symbol="") {
     ofstream op2;
@@ -101,20 +101,13 @@ void fcout(string token, string symbol="") {
 //     output<<msg;
 //     output.close();
 // }
-void log_error(string msg=""){
-    ofstream output;
-    output.open("log_error.txt", ios::app);
-    output<<"Line Number: "<< line_cnt <<"\n";
-    output<<msg;
-    output.close();
+void log_error(const char *msg=""){
+    fprintf(yyout, "Line Number: %d\n", line_cnt);
+    fprintf(yyout, "%s", msg);
 }
 
-
 void yyerror (const char *str) {
-    ofstream output;
-    output.open("log_error.txt", ios::app);
-    output << str << "\n";
-    output.close();
+    fprintf(yyout, "%s\n", str);
 }
 
 
@@ -161,7 +154,7 @@ void clearOutput() {
 }
 
 
-#line 165 "parser.tab.c"
+#line 158 "parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -628,10 +621,10 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,   116,   116,   117,   120,   121,   124,   125,   126,   129,
-     134,   135,   138,   141,   142,   143,   146,   147,   148,   149,
-     150,   154,   157,   160,   161,   162,   163,   164,   165,   166,
-     167,   168,   172
+       0,   110,   110,   111,   114,   115,   118,   119,   120,   123,
+     128,   129,   132,   135,   136,   137,   140,   141,   142,   143,
+     144,   148,   151,   154,   155,   156,   157,   158,   159,   160,
+     161,   162,   166
 };
 #endif
 
@@ -678,12 +671,12 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      13,    -7,    -7,    -7,    -7,    -7,    27,     3,    -7,    -7,
-      20,    -7,    -5,    -7,     4,    -7,    -7,    -5,    -7,    -5,
-      43,    -7,     5,     1,    -1,    26,    -5,    -7,    18,    42,
-       1,     1,    -7,    -7,    58,    -7,    47,    57,    55,    69,
-      53,     1,     1,     1,     1,    -7,     1,    40,    -7,    13,
-      -7,    23,    23,    52,    52,    -7,    64,     8,    -7,    -7
+      13,    -7,    -7,    -7,    -7,    -7,    20,     3,    -7,    -7,
+      35,    -7,    -5,    -7,    11,    -7,    -7,    -5,    -7,    -5,
+      27,    -7,     5,     1,    -1,    26,    -5,    -7,    14,    44,
+       1,     1,    -7,    -7,    58,    -7,    38,    48,    56,    69,
+      53,     1,     1,     1,     1,    -7,     1,    45,    -7,    13,
+      -7,    63,    63,    -7,    -7,    34,    74,     8,    -7,    -7
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -702,7 +695,7 @@ static const yytype_int8 yydefact[] =
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -7,    -7,    28,    -6,    66,    -7,    -7,    22,    -7,    -7,
+      -7,    -7,    24,    -6,    75,    -7,    -7,    22,    -7,    -7,
       -7,    12,     0
 };
 
@@ -720,13 +713,13 @@ static const yytype_int8 yytable[] =
 {
       14,    16,    28,    -3,     1,     2,    31,    14,    28,     1,
       29,     2,    22,     2,     1,    30,    59,    24,     2,    25,
-      23,    30,    12,     2,    32,    33,    36,    15,     3,     4,
-       5,    29,    19,     3,     4,     5,    43,    44,     3,     4,
-       5,    37,    39,    40,    46,     3,     4,     5,    38,    14,
-      47,    16,    26,    51,    52,    53,    54,    14,    55,    50,
-      27,    48,    49,    56,    41,    42,    43,    44,    58,    41,
-      42,    43,    44,    46,    46,    45,    18,    57,     0,    46,
-      41,    42,    43,    44,     0,     0,     0,     0,     0,     0,
+      15,    30,    12,     2,    32,    33,    36,    23,     3,     4,
+       5,    29,    19,     3,     4,     5,    26,    37,     3,     4,
+       5,    47,    39,    40,    27,    41,    42,    43,    44,    14,
+      38,    16,    48,    51,    52,    53,    54,    14,    55,    50,
+       3,     4,     5,    49,    41,    42,    43,    44,    56,    41,
+      42,    43,    44,    57,    46,    45,    43,    44,    58,    46,
+      41,    42,    43,    44,     0,    18,     0,     0,     0,     0,
       46
 };
 
@@ -734,13 +727,13 @@ static const yytype_int8 yycheck[] =
 {
        0,     7,     3,     0,     1,    10,     5,     7,     3,     1,
        5,    10,    12,    10,     1,    16,     8,    17,    10,    19,
-      16,    16,     0,    10,    23,    24,    26,     0,    25,    26,
-      27,     5,    10,    25,    26,    27,    13,    14,    25,    26,
-      27,    23,    30,    31,    21,    25,    26,    27,     6,    49,
-       3,    57,     9,    41,    42,    43,    44,    57,    46,     6,
-      17,     4,     7,    23,    11,    12,    13,    14,     4,    11,
-      12,    13,    14,    21,    21,    17,    10,    49,    -1,    21,
-      11,    12,    13,    14,    -1,    -1,    -1,    -1,    -1,    -1,
+       0,    16,     0,    10,    23,    24,    26,    16,    25,    26,
+      27,     5,    10,    25,    26,    27,     9,    23,    25,    26,
+      27,     3,    30,    31,    17,    11,    12,    13,    14,    49,
+       6,    57,     4,    41,    42,    43,    44,    57,    46,     6,
+      25,    26,    27,     7,    11,    12,    13,    14,    23,    11,
+      12,    13,    14,    49,    21,    17,    13,    14,     4,    21,
+      11,    12,    13,    14,    -1,    10,    -1,    -1,    -1,    -1,
       21
 };
 
@@ -1235,173 +1228,175 @@ yyreduce:
   switch (yyn)
     {
   case 4: /* stmt: stmt unit  */
-#line 120 "parser.y"
+#line 114 "parser.y"
                  { log_error("stmt : stmt unit\n");}
-#line 1241 "parser.tab.c"
+#line 1234 "parser.tab.c"
     break;
 
   case 5: /* stmt: unit  */
-#line 121 "parser.y"
+#line 115 "parser.y"
             {log_error("stmt : unit\n"); }
-#line 1247 "parser.tab.c"
+#line 1240 "parser.tab.c"
     break;
 
   case 6: /* unit: var_decl  */
-#line 124 "parser.y"
+#line 118 "parser.y"
                  { log_error("unit : var_decl\n"); }
-#line 1253 "parser.tab.c"
+#line 1246 "parser.tab.c"
     break;
 
   case 7: /* unit: expr_decl  */
-#line 125 "parser.y"
+#line 119 "parser.y"
                   { log_error("unit : expr_decl\n"); }
-#line 1259 "parser.tab.c"
+#line 1252 "parser.tab.c"
     break;
 
   case 8: /* unit: error  */
-#line 126 "parser.y"
-             {yyerrok;log_error(""); yyerror("invalid expression");}
-#line 1265 "parser.tab.c"
+#line 120 "parser.y"
+             {yyerrok;log_error(""); yyerror("syntax error: invalid expression");}
+#line 1258 "parser.tab.c"
     break;
 
   case 9: /* func_decl: type_spec term LPAREN RPAREN LCURL stmt RCURL  */
-#line 129 "parser.y"
+#line 123 "parser.y"
                                                           {log_error("func_decl : type_spec term LPAREN RPAREN LCURL stmt RCURL\n"); }
-#line 1271 "parser.tab.c"
+#line 1264 "parser.tab.c"
     break;
 
   case 12: /* var_decl: type_spec decl_list SEMICOLON  */
-#line 138 "parser.y"
+#line 132 "parser.y"
                                          {log_error("vardecl : type_spec dec_list SEMICOLON\n"); }
-#line 1277 "parser.tab.c"
+#line 1270 "parser.tab.c"
     break;
 
   case 13: /* type_spec: INT  */
-#line 141 "parser.y"
+#line 135 "parser.y"
                 {log_error("type_spec : INT\n");}
-#line 1283 "parser.tab.c"
+#line 1276 "parser.tab.c"
     break;
 
   case 14: /* type_spec: FLOAT  */
-#line 142 "parser.y"
+#line 136 "parser.y"
                   {log_error("type_spec : FLOAT\n");}
-#line 1289 "parser.tab.c"
+#line 1282 "parser.tab.c"
     break;
 
   case 15: /* type_spec: DOUBLE  */
-#line 143 "parser.y"
+#line 137 "parser.y"
                    {log_error("type_spec : DOUBLE\n");}
-#line 1295 "parser.tab.c"
+#line 1288 "parser.tab.c"
     break;
 
   case 16: /* decl_list: decl_list COMMA term  */
-#line 146 "parser.y"
+#line 140 "parser.y"
                                  {log_error("dec_list : dec_list COMMA term\n");}
-#line 1301 "parser.tab.c"
+#line 1294 "parser.tab.c"
     break;
 
   case 17: /* decl_list: decl_list COMMA term LTHIRD CONST_INT RTHIRD  */
-#line 147 "parser.y"
+#line 141 "parser.y"
                                                {log_error("dec_list : dec_list COMMA term LTHIRD CONST_INT RTHIRD\n"); }
-#line 1307 "parser.tab.c"
+#line 1300 "parser.tab.c"
     break;
 
   case 18: /* decl_list: term  */
-#line 148 "parser.y"
+#line 142 "parser.y"
        {log_error("dec_list : term\n");}
-#line 1313 "parser.tab.c"
+#line 1306 "parser.tab.c"
     break;
 
   case 19: /* decl_list: term LTHIRD CONST_INT RTHIRD  */
-#line 149 "parser.y"
+#line 143 "parser.y"
                                { log_error("dec_list : term LTHIRD CONST_INT RTHIRD\n"); }
-#line 1319 "parser.tab.c"
+#line 1312 "parser.tab.c"
     break;
 
   case 20: /* decl_list: ass_list  */
-#line 150 "parser.y"
+#line 144 "parser.y"
            {log_error("dec_list : asslist\n");}
-#line 1325 "parser.tab.c"
+#line 1318 "parser.tab.c"
     break;
 
   case 21: /* expr_decl: term ASSIGNOP expr SEMICOLON  */
-#line 154 "parser.y"
+#line 148 "parser.y"
                                           {log_error("expr_decl : term ASSIGNOP expr SEMICOLON\n");}
-#line 1331 "parser.tab.c"
+#line 1324 "parser.tab.c"
     break;
 
   case 22: /* ass_list: term ASSIGNOP expr  */
-#line 157 "parser.y"
+#line 151 "parser.y"
                               {log_error(" asslist : term ASSIGNOP expr\n");}
-#line 1337 "parser.tab.c"
+#line 1330 "parser.tab.c"
     break;
 
   case 23: /* expr: CONST_INT  */
-#line 160 "parser.y"
+#line 154 "parser.y"
                    { log_error("expr : CONST_INT \n"); }
-#line 1343 "parser.tab.c"
+#line 1336 "parser.tab.c"
     break;
 
   case 24: /* expr: CONST_FLOAT  */
-#line 161 "parser.y"
+#line 155 "parser.y"
                    { log_error("expr : CONST_FLOAT \n"); }
-#line 1349 "parser.tab.c"
+#line 1342 "parser.tab.c"
     break;
 
   case 25: /* expr: expr MULOP expr  */
-#line 162 "parser.y"
+#line 156 "parser.y"
                        { log_error("expr : expr MULOP expr \n"); }
-#line 1355 "parser.tab.c"
+#line 1348 "parser.tab.c"
     break;
 
   case 26: /* expr: expr DIVOP expr  */
-#line 163 "parser.y"
+#line 157 "parser.y"
                        { log_error("expr : expr DIVOP expr \n"); }
-#line 1361 "parser.tab.c"
+#line 1354 "parser.tab.c"
     break;
 
   case 27: /* expr: expr ADDOP expr  */
-#line 164 "parser.y"
+#line 158 "parser.y"
                        { log_error("expr : expr ADDOP expr \n"); }
-#line 1367 "parser.tab.c"
+#line 1360 "parser.tab.c"
     break;
 
   case 28: /* expr: expr SUBOP expr  */
-#line 165 "parser.y"
+#line 159 "parser.y"
                        { log_error("expr : expr SUBOP expr \n"); }
-#line 1373 "parser.tab.c"
+#line 1366 "parser.tab.c"
     break;
 
   case 29: /* expr: expr LOGICOP expr  */
-#line 166 "parser.y"
+#line 160 "parser.y"
                          { log_error("expr : expr LOGICOP expr \n"); }
-#line 1379 "parser.tab.c"
+#line 1372 "parser.tab.c"
     break;
 
   case 30: /* expr: LPAREN expr RPAREN  */
-#line 167 "parser.y"
+#line 161 "parser.y"
                           { log_error("expr : LPAREN expr RPAREN  \n"); }
-#line 1385 "parser.tab.c"
+#line 1378 "parser.tab.c"
     break;
 
   case 31: /* expr: term  */
-#line 168 "parser.y"
+#line 162 "parser.y"
             { log_error("expr : term \n"); }
-#line 1391 "parser.tab.c"
+#line 1384 "parser.tab.c"
     break;
 
   case 32: /* term: ID  */
-#line 172 "parser.y"
+#line 166 "parser.y"
           {
-    log_error("term: ID\n");
-    st.insert(string((yyvsp[0].cvar)), "identifier"); 
-    // st.print();
+    if (!(st.insert(string((yyvsp[0].cvar)), "identifier", line_cnt))) {
+        fprintf(yyout, "%s is already declared\n", (char*)((yyvsp[0].cvar)));
+    }else{
+        log_error("term: ID\n");
+    }
 }
-#line 1401 "parser.tab.c"
+#line 1396 "parser.tab.c"
     break;
 
 
-#line 1405 "parser.tab.c"
+#line 1400 "parser.tab.c"
 
       default: break;
     }
@@ -1594,7 +1589,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 179 "parser.y"
+#line 175 "parser.y"
 
 
 int main() 
@@ -1602,7 +1597,7 @@ int main()
   st.clear();
   clearOutput();
   yyin=fopen("input.txt","r");
-  /* yyout=fopen("log.txt","w"); */
+  yyout=fopen("log_error.txt","w");
   yyparse(); 
   st.print();
  
