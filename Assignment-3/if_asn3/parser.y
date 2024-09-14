@@ -10,10 +10,10 @@ extern int line_cnt;
 // int line_cnt=1, error_cnt=0;
 
 // ofstream outFile("logerror.txt");  
-SymbolTable st;
-
 
 int yylex();
+
+SymbolTable st;
 
 void fcout(string token, string symbol="") {
     ofstream op2;
@@ -31,20 +31,13 @@ void fcout(string token, string symbol="") {
 //     output<<msg;
 //     output.close();
 // }
-void log_error(string msg=""){
-    ofstream output;
-    output.open("log_error.txt", ios::app);
-    output<<"Line Number: "<< line_cnt <<"\n";
-    output<<msg;
-    output.close();
+void log_error(const char *msg=""){
+    fprintf(yyout, "Line Number: %d\n", line_cnt);
+    fprintf(yyout, "%s", msg);
 }
 
-
 void yyerror (const char *str) {
-    ofstream output;
-    output.open("log_error.txt", ios::app);
-    output << str << "\n";
-    output.close();
+    fprintf(yyout, "%s\n", str);
 }
 
 
@@ -171,10 +164,12 @@ expr : CONST_INT   { log_error("expr : CONST_INT \n"); }
 
 
 term : ID {
-    log_error("term: ID\n");
-    st.insert(string($1), "identifier"); 
-    // st.print();
-}   
+    if (!(st.insert(string($1), "identifier", line_cnt))) {
+        fprintf(yyout, "%s is already declared\n", (char*)($1));
+    }else{
+        log_error("term: ID\n");
+    }
+}  
 ;
 
 %%
@@ -184,7 +179,7 @@ int main()
   st.clear();
   clearOutput();
   yyin=fopen("input.txt","r");
-  /* yyout=fopen("log.txt","w"); */
+  yyout=fopen("log_error.txt","w");
   yyparse(); 
   st.print();
  

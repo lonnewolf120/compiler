@@ -76,7 +76,7 @@ public:
         int id = hash(si, token);
         if (snf.find(id) != snf.end()) {  // Check if the hash key exists in the map
             for (auto* i : snf[id]) {
-                if (i->getSymbol() == si) {
+                if (i->getSymbol() == si && i->getToken() == token) {
                     return i;
                 }
             }
@@ -84,16 +84,16 @@ public:
         return nullptr;
     }
 
-    void insert(string symbol, string token) {
+    bool insert(string symbol, string token, int line_number) {
         int id = hash(symbol, token);
 
         Symbol_Info* tmp = lookUp(symbol, token);
         if (tmp == nullptr) {
             snf[id].push_back(new Symbol_Info(symbol, token));  // Directly insert into the map
-            return;
+            return true;
         } else {
-            // logErr << symbol << " is already declared\n";
-            // return;
+            // logErr << "Line Number: " << line_number << "\n" << symbol << " is already declared\n";
+            return false;
         }
     }
 
