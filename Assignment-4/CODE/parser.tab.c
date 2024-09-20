@@ -69,28 +69,97 @@
 /* First part of user prologue.  */
 #line 1 "parser.y"
 
-#include<stdio.h>
-//#define YYSTYPE double
+#include "symboltable2.h"
+#define YYSTYPE Symbol_Info
+
+
 extern FILE *yyin, *yyout;
+extern int line_cnt;
+string variables="";
+// int line_cnt=1, error_cnt=0;
+
+// ofstream outFile("logerror.txt");  
 
 int yylex();
-int tcnt = 0;
 
-void yyerror (const char *str)
-{
-printf("Error. %s \n", str);
-}
+SymbolTable st;
 
-char* CTemp(){
-    char* temp = (char*)malloc(10);
-    sprintf(temp, "t%d", tcnt++);
+int temp_counter=1;
+char* newTemp(){
+    char* temp;
+    temp = (char*) malloc(15*sizeof(char));
+    sprintf(temp, "t%d", temp_counter);
+    temp_counter++;
     return temp;
 }
 
 
+void fcout(string token, string symbol="") {
+    ofstream op2;
+    op2.open("token.txt", ios::app);
+    if (!op2.is_open()) {
+        cerr << "Error opening file.\n";
+    }
+    (symbol=="")?op2<<"<"<<token<<">": op2<<"<"<<token<<", "<<symbol<<">";
+    op2.close();
+}
+
+void log_error(const char *msg=""){
+    fprintf(yyout, "Line Number: %d\n", line_cnt);
+    fprintf(yyout, "%s", msg);
+}
+
+void yyerror (const char *str) {
+    fprintf(yyout, "%s\n", str);
+}
 
 
-#line 94 "parser.tab.c"
+void printASM(string str) {
+    ofstream op2;
+    op2.open("code.asm", ios::app);
+    if (!op2.is_open()) {
+        cerr << "Error opening file.\n";
+    }
+    op2<<str;
+    op2.close();
+}
+void initASM(ofstream &op, string variables){
+    op << ".MODEL SMALL\n";
+    op << ".STACK 100H\n";
+    op << ".DATA\n";
+    op << variables;
+    op << ".CODE\n";
+    op << "MAIN PROC\n";
+    op << "\tMOV AX, @DATA\n";
+    op << "\tMOV DS, AX\n";
+}
+
+void printIR(string str) {
+    ofstream op2;
+    op2.open("code.ir", ios::app);
+    if (!op2.is_open()) {
+        cerr << "Error opening file.\n";
+    }
+    op2<<str;
+    op2.close();
+}
+
+void clearOutput() {
+    ofstream clearout;
+    clearout.open("log_error.txt", ios::trunc);
+    if (!clearout.is_open()) {
+        cerr << "Error delete file contents.\n";
+    }
+    clearout.close();
+    clearout.open("table.txt", ios::trunc);
+    if (!clearout.is_open()) {
+        cerr << "Error delete file contents.\n";
+    }
+    clearout.close();
+}
+
+
+#line 163 "parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -121,42 +190,56 @@ enum yysymbol_kind_t
   YYSYMBOL_YYEOF = 0,                      /* "end of file"  */
   YYSYMBOL_YYerror = 1,                    /* error  */
   YYSYMBOL_YYUNDEF = 2,                    /* "invalid token"  */
-  YYSYMBOL_NEWLINE = 3,                    /* NEWLINE  */
-  YYSYMBOL_LTHIRD = 4,                     /* LTHIRD  */
-  YYSYMBOL_RTHIRD = 5,                     /* RTHIRD  */
-  YYSYMBOL_LPAREN = 6,                     /* LPAREN  */
-  YYSYMBOL_RPAREN = 7,                     /* RPAREN  */
-  YYSYMBOL_LCURL = 8,                      /* LCURL  */
-  YYSYMBOL_RCURL = 9,                      /* RCURL  */
-  YYSYMBOL_COMMA = 10,                     /* COMMA  */
-  YYSYMBOL_CONST_INT = 11,                 /* CONST_INT  */
-  YYSYMBOL_CONST_FLOAT = 12,               /* CONST_FLOAT  */
-  YYSYMBOL_INT = 13,                       /* INT  */
-  YYSYMBOL_FLOAT = 14,                     /* FLOAT  */
-  YYSYMBOL_DOUBLE = 15,                    /* DOUBLE  */
-  YYSYMBOL_ID = 16,                        /* ID  */
-  YYSYMBOL_ADDOP = 17,                     /* ADDOP  */
-  YYSYMBOL_SUBOP = 18,                     /* SUBOP  */
-  YYSYMBOL_MULOP = 19,                     /* MULOP  */
-  YYSYMBOL_DIVOP = 20,                     /* DIVOP  */
-  YYSYMBOL_ASSIGNOP = 21,                  /* ASSIGNOP  */
-  YYSYMBOL_SEMICOLON = 22,                 /* SEMICOLON  */
-  YYSYMBOL_RELOP = 23,                     /* RELOP  */
-  YYSYMBOL_INCOP = 24,                     /* INCOP  */
-  YYSYMBOL_LOGICOP = 25,                   /* LOGICOP  */
-  YYSYMBOL_NOT = 26,                       /* NOT  */
-  YYSYMBOL_YYACCEPT = 27,                  /* $accept  */
-  YYSYMBOL_mul_stmt = 28,                  /* mul_stmt  */
-  YYSYMBOL_func_decl = 29,                 /* func_decl  */
-  YYSYMBOL_stmt = 30,                      /* stmt  */
-  YYSYMBOL_unit = 31,                      /* unit  */
-  YYSYMBOL_var_decl = 32,                  /* var_decl  */
-  YYSYMBOL_type_spec = 33,                 /* type_spec  */
-  YYSYMBOL_term = 34,                      /* term  */
-  YYSYMBOL_ass_list = 35,                  /* ass_list  */
-  YYSYMBOL_expr = 36,                      /* expr  */
-  YYSYMBOL_expr_decl = 37,                 /* expr_decl  */
-  YYSYMBOL_decl_list = 38                  /* decl_list  */
+  YYSYMBOL_LTHIRD = 3,                     /* LTHIRD  */
+  YYSYMBOL_RTHIRD = 4,                     /* RTHIRD  */
+  YYSYMBOL_LPAREN = 5,                     /* LPAREN  */
+  YYSYMBOL_RPAREN = 6,                     /* RPAREN  */
+  YYSYMBOL_LCURL = 7,                      /* LCURL  */
+  YYSYMBOL_RCURL = 8,                      /* RCURL  */
+  YYSYMBOL_COMMA = 9,                      /* COMMA  */
+  YYSYMBOL_ID = 10,                        /* ID  */
+  YYSYMBOL_ADDOP = 11,                     /* ADDOP  */
+  YYSYMBOL_SUBOP = 12,                     /* SUBOP  */
+  YYSYMBOL_MULOP = 13,                     /* MULOP  */
+  YYSYMBOL_DIVOP = 14,                     /* DIVOP  */
+  YYSYMBOL_MODOP = 15,                     /* MODOP  */
+  YYSYMBOL_ASSIGNOP = 16,                  /* ASSIGNOP  */
+  YYSYMBOL_SEMICOLON = 17,                 /* SEMICOLON  */
+  YYSYMBOL_RELOP = 18,                     /* RELOP  */
+  YYSYMBOL_INCOP = 19,                     /* INCOP  */
+  YYSYMBOL_DECOP = 20,                     /* DECOP  */
+  YYSYMBOL_LOGICOP = 21,                   /* LOGICOP  */
+  YYSYMBOL_NOT = 22,                       /* NOT  */
+  YYSYMBOL_CONST_INT = 23,                 /* CONST_INT  */
+  YYSYMBOL_CONST_FLOAT = 24,               /* CONST_FLOAT  */
+  YYSYMBOL_INT = 25,                       /* INT  */
+  YYSYMBOL_FLOAT = 26,                     /* FLOAT  */
+  YYSYMBOL_DOUBLE = 27,                    /* DOUBLE  */
+  YYSYMBOL_CHAR = 28,                      /* CHAR  */
+  YYSYMBOL_IF = 29,                        /* IF  */
+  YYSYMBOL_ELSE = 30,                      /* ELSE  */
+  YYSYMBOL_FOR = 31,                       /* FOR  */
+  YYSYMBOL_WHILE = 32,                     /* WHILE  */
+  YYSYMBOL_RETURN = 33,                    /* RETURN  */
+  YYSYMBOL_BREAK = 34,                     /* BREAK  */
+  YYSYMBOL_CONTINUE = 35,                  /* CONTINUE  */
+  YYSYMBOL_VOID = 36,                      /* VOID  */
+  YYSYMBOL_MAIN = 37,                      /* MAIN  */
+  YYSYMBOL_YYACCEPT = 38,                  /* $accept  */
+  YYSYMBOL_line = 39,                      /* line  */
+  YYSYMBOL_stmt = 40,                      /* stmt  */
+  YYSYMBOL_unit = 41,                      /* unit  */
+  YYSYMBOL_func_decl = 42,                 /* func_decl  */
+  YYSYMBOL_param_list = 43,                /* param_list  */
+  YYSYMBOL_param_decl = 44,                /* param_decl  */
+  YYSYMBOL_mul_stmt = 45,                  /* mul_stmt  */
+  YYSYMBOL_var_decl = 46,                  /* var_decl  */
+  YYSYMBOL_type_spec = 47,                 /* type_spec  */
+  YYSYMBOL_decl_list = 48,                 /* decl_list  */
+  YYSYMBOL_expr_decl = 49,                 /* expr_decl  */
+  YYSYMBOL_ass_list = 50,                  /* ass_list  */
+  YYSYMBOL_expr = 51,                      /* expr  */
+  YYSYMBOL_term = 52                       /* term  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -482,21 +565,21 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  7
+#define YYFINAL  15
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   64
+#define YYLAST   115
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  27
+#define YYNTOKENS  38
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  12
+#define YYNNTS  15
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  27
+#define YYNRULES  36
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  52
+#define YYNSTATES  70
 
 /* YYMAXUTOK -- Last valid token kind.  */
-#define YYMAXUTOK   281
+#define YYMAXUTOK   292
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -538,16 +621,18 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-      25,    26
+      25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
+      35,    36,    37
 };
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-static const yytype_int8 yyrline[] =
+static const yytype_int16 yyrline[] =
 {
-       0,    43,    43,    44,    47,    50,    50,    53,    54,    57,
-      60,    61,    62,    65,    71,    73,    74,    75,    76,    77,
-      85,    86,    89,    92,    93,    94,    95,    96
+       0,   106,   106,   107,   110,   111,   114,   115,   116,   119,
+     134,   152,   153,   156,   160,   161,   164,   176,   184,   185,
+     188,   189,   190,   198,   199,   203,   217,   226,   227,   228,
+     240,   252,   264,   276,   293,   303,   314
 };
 #endif
 
@@ -563,12 +648,14 @@ static const char *yysymbol_name (yysymbol_kind_t yysymbol) YY_ATTRIBUTE_UNUSED;
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "\"end of file\"", "error", "\"invalid token\"", "NEWLINE", "LTHIRD",
-  "RTHIRD", "LPAREN", "RPAREN", "LCURL", "RCURL", "COMMA", "CONST_INT",
-  "CONST_FLOAT", "INT", "FLOAT", "DOUBLE", "ID", "ADDOP", "SUBOP", "MULOP",
-  "DIVOP", "ASSIGNOP", "SEMICOLON", "RELOP", "INCOP", "LOGICOP", "NOT",
-  "$accept", "mul_stmt", "func_decl", "stmt", "unit", "var_decl",
-  "type_spec", "term", "ass_list", "expr", "expr_decl", "decl_list", YY_NULLPTR
+  "\"end of file\"", "error", "\"invalid token\"", "LTHIRD", "RTHIRD",
+  "LPAREN", "RPAREN", "LCURL", "RCURL", "COMMA", "ID", "ADDOP", "SUBOP",
+  "MULOP", "DIVOP", "MODOP", "ASSIGNOP", "SEMICOLON", "RELOP", "INCOP",
+  "DECOP", "LOGICOP", "NOT", "CONST_INT", "CONST_FLOAT", "INT", "FLOAT",
+  "DOUBLE", "CHAR", "IF", "ELSE", "FOR", "WHILE", "RETURN", "BREAK",
+  "CONTINUE", "VOID", "MAIN", "$accept", "line", "stmt", "unit",
+  "func_decl", "param_list", "param_decl", "mul_stmt", "var_decl",
+  "type_spec", "decl_list", "expr_decl", "ass_list", "expr", "term", YY_NULLPTR
 };
 
 static const char *
@@ -578,12 +665,12 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-21)
+#define YYPACT_NINF (-26)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
 
-#define YYTABLE_NINF (-1)
+#define YYTABLE_NINF (-4)
 
 #define yytable_value_is_error(Yyn) \
   0
@@ -592,12 +679,13 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      40,   -21,   -21,   -21,     2,   -21,    -4,   -21,   -21,   -21,
-       4,     7,    18,   -10,    14,   -21,    33,    -4,    10,    39,
-     -21,   -21,   -21,    -3,   -21,     3,    27,   -21,    47,    27,
-      -4,   -21,   -21,   -21,   -21,    15,    45,    28,    55,    27,
-      27,    27,    27,   -21,   -21,    49,    21,    32,   -21,    25,
-      56,   -21
+      24,   -26,   -26,   -26,   -26,   -26,     3,     5,   -26,   -26,
+      88,   -26,    14,   -26,    -7,   -26,   -26,    14,   -26,    14,
+      -1,   -26,    79,    51,    73,     8,    14,   -26,   -13,    -4,
+      51,    51,   -26,   -26,    80,   -26,    35,    36,    41,    60,
+     -26,    14,    91,    67,    51,    51,    51,    51,   -26,    51,
+      31,   -26,    24,    58,    88,   -26,   -26,    46,    46,   -26,
+     -26,    95,    63,    10,    24,   -26,   -26,   -26,    45,   -26
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -605,26 +693,27 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       0,    10,    11,    12,     0,     3,     0,     1,     2,    13,
-       0,     0,     0,     0,     0,     6,     0,     0,     0,     0,
-       4,     5,     7,    25,    27,     0,     0,     8,     0,     0,
-       0,     9,    15,    16,    21,     0,     0,    14,    23,     0,
-       0,     0,     0,    22,    26,     0,    19,    20,    17,    18,
-       0,    24
+       0,     8,    36,    17,    18,    19,     0,     0,     5,    15,
+       2,     6,     0,     7,     0,     1,     4,     0,    14,     0,
+       0,    24,    22,     0,    22,     0,     0,    16,     0,     0,
+       0,     0,    27,    28,     0,    35,    20,     0,     0,     0,
+      11,     0,    26,     0,     0,     0,     0,     0,    25,     0,
+       0,    23,     0,     0,     0,    13,    34,    31,    32,    29,
+      30,    33,     0,     0,     0,    12,    21,     9,     0,    10
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -21,   -21,    58,   -21,    50,   -21,    43,    -6,   -21,   -20,
-     -21,   -21
+     -26,   -26,   -25,    -6,    75,   -26,    23,   -26,   -26,     4,
+     -26,   -26,   -26,    -2,     0
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     4,     5,    14,    15,    16,     6,    34,    24,    35,
-      19,    25
+       0,     6,     7,     8,     9,    39,    40,    10,    11,    17,
+      20,    13,    21,    34,    35
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -632,52 +721,65 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-      10,    28,     7,     1,     2,     3,     9,    18,    18,    37,
-      11,    23,     9,    30,    12,     1,     2,     3,    29,    46,
-      47,    48,    49,    20,    38,    31,    13,     1,     2,     3,
-       9,    26,    39,    40,    41,    42,    22,    43,    32,    33,
-      41,    42,    27,     9,    41,    39,    40,    41,    42,    39,
-      44,    41,    42,     1,     2,     3,    17,    17,    36,    45,
-      50,    51,     8,     0,    21
+      14,    16,    38,    15,    12,    -3,     1,    14,    26,    23,
+      37,     1,    22,    29,    19,     2,    27,    24,    67,    25,
+       2,     3,     4,     5,     2,     1,    36,    63,    42,    43,
+       3,     4,     5,    41,     2,     3,     4,     5,    50,    68,
+      51,    55,    57,    58,    59,    60,     1,    61,    52,     3,
+       4,     5,    14,    69,    62,     2,    31,    16,    41,    46,
+      47,     2,    16,    14,    14,    64,    53,    66,    14,    54,
+       3,     4,     5,    56,    32,    33,    28,    65,    44,    45,
+      46,    47,    28,     0,    29,    18,     0,     0,    49,    30,
+       0,    44,    45,    46,    47,    30,     0,    48,     0,     0,
+       0,    49,    44,    45,    46,    47,    44,    45,    46,    47,
+       0,     0,    49,     3,     4,     5
 };
 
 static const yytype_int8 yycheck[] =
 {
-       6,     4,     0,    13,    14,    15,    16,    13,    14,    29,
-       6,    17,    16,    10,     7,    13,    14,    15,    21,    39,
-      40,    41,    42,     9,    30,    22,     8,    13,    14,    15,
-      16,    21,    17,    18,    19,    20,     3,    22,    11,    12,
-      19,    20,     3,    16,    19,    17,    18,    19,    20,    17,
-       5,    19,    20,    13,    14,    15,    13,    14,    11,     4,
-      11,     5,     4,    -1,    14
+       0,     7,     6,     0,     0,     0,     1,     7,     9,    16,
+      23,     1,    12,     5,    10,    10,    17,    17,     8,    19,
+      10,    25,    26,    27,    10,     1,    26,    52,    30,    31,
+      25,    26,    27,    29,    10,    25,    26,    27,     3,    64,
+       4,    41,    44,    45,    46,    47,     1,    49,     7,    25,
+      26,    27,    52,     8,    23,    10,     5,    63,    54,    13,
+      14,    10,    68,    63,    64,     7,     6,     4,    68,     9,
+      25,    26,    27,     6,    23,    24,     3,    54,    11,    12,
+      13,    14,     3,    -1,     5,    10,    -1,    -1,    21,    16,
+      -1,    11,    12,    13,    14,    16,    -1,    17,    -1,    -1,
+      -1,    21,    11,    12,    13,    14,    11,    12,    13,    14,
+      -1,    -1,    21,    25,    26,    27
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,    13,    14,    15,    28,    29,    33,     0,    29,    16,
-      34,     6,     7,     8,    30,    31,    32,    33,    34,    37,
-       9,    31,     3,    34,    35,    38,    21,     3,     4,    21,
-      10,    22,    11,    12,    34,    36,    11,    36,    34,    17,
-      18,    19,    20,    22,     5,     4,    36,    36,    36,    36,
-      11,     5
+       0,     1,    10,    25,    26,    27,    39,    40,    41,    42,
+      45,    46,    47,    49,    52,     0,    41,    47,    42,    47,
+      48,    50,    52,    16,    52,    52,     9,    17,     3,     5,
+      16,     5,    23,    24,    51,    52,    52,    23,     6,    43,
+      44,    47,    51,    51,    11,    12,    13,    14,    17,    21,
+       3,     4,     7,     6,     9,    52,     6,    51,    51,    51,
+      51,    51,    23,    40,     7,    44,     4,     8,    40,     8
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    27,    28,    28,    29,    30,    30,    31,    31,    32,
-      33,    33,    33,    34,    35,    36,    36,    36,    36,    36,
-      36,    36,    37,    38,    38,    38,    38,    38
+       0,    38,    39,    39,    40,    40,    41,    41,    41,    42,
+      42,    43,    43,    44,    45,    45,    46,    47,    47,    47,
+      48,    48,    48,    48,    48,    49,    50,    51,    51,    51,
+      51,    51,    51,    51,    51,    51,    52
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     2,     1,     7,     2,     1,     2,     2,     3,
-       1,     1,     1,     1,     3,     1,     1,     3,     3,     3,
-       3,     1,     4,     3,     6,     1,     4,     1
+       0,     2,     1,     1,     2,     1,     1,     1,     1,     7,
+       8,     1,     3,     2,     2,     1,     3,     1,     1,     1,
+       3,     6,     1,     4,     1,     4,     3,     1,     1,     3,
+       3,     3,     3,     3,     3,     1,     1
 };
 
 
@@ -1140,48 +1242,349 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-  case 13: /* term: ID  */
-#line 65 "parser.y"
-            {
-    st.insert(yytext, "Identifier"); 
-    fcout("ID", yytext);  
+  case 4: /* stmt: stmt unit  */
+#line 110 "parser.y"
+                 { log_error("stmt : stmt unit\n");}
+#line 1249 "parser.tab.c"
+    break;
+
+  case 5: /* stmt: unit  */
+#line 111 "parser.y"
+            {log_error("stmt : unit\n"); }
+#line 1255 "parser.tab.c"
+    break;
+
+  case 6: /* unit: var_decl  */
+#line 114 "parser.y"
+                 { log_error("unit : var_decl\n"); }
+#line 1261 "parser.tab.c"
+    break;
+
+  case 7: /* unit: expr_decl  */
+#line 115 "parser.y"
+                  { log_error("unit : expr_decl\n"); }
+#line 1267 "parser.tab.c"
+    break;
+
+  case 8: /* unit: error  */
+#line 116 "parser.y"
+             {yyerrok;log_error(""); yyerror("syntax error: invalid expression");}
+#line 1273 "parser.tab.c"
+    break;
+
+  case 9: /* func_decl: type_spec term LPAREN RPAREN LCURL stmt RCURL  */
+#line 119 "parser.y"
+                                                          {
+    log_error("func_decl : type_spec term LPAREN RPAREN LCURL stmt RCURL\n"); 
+    
+    string funcName = string(yyvsp[-5].getSymbol());
+    string asmCode = funcName + " PROC\n";
+    asmCode += "\tPUSH BP\n";
+    asmCode += "\tMOV BP, SP\n";
+    asmCode += "\t; Function body goes here\n";
+    asmCode += "\t"+ string(yyvsp[-1].getSymbol()) +"\n";
+    asmCode += "\tPOP BP\n";
+    asmCode += "\tRET\n";
+    asmCode += funcName + " ENDP\n";
+    printASM(asmCode);
+
+    }
+#line 1293 "parser.tab.c"
+    break;
+
+  case 10: /* func_decl: type_spec term LPAREN param_list RPAREN LCURL stmt RCURL  */
+#line 134 "parser.y"
+                                                               {
+    log_error("func_decl : type_spec term LPAREN param_list RPAREN LCURL stmt RCURL\n"); 
+    
+    // string funcName = string($2.getSymbol());
+    // string asmCode = funcName + " PROC\n";
+    // asmCode += "\tPUSH BP\n";
+    // asmCode += "\tMOV BP, SP\n";
+    // asmCode += "\t; Function body goes here\n";
+    // asmCode += "\t"+ string($6.getSymbol()) +"\n";
+    // asmCode += "\t"+ string($6.getSymbol()) +"\n";
+    // asmCode += "\tPOP BP\n";
+    // asmCode += "\tRET\n";
+    // asmCode += funcName + " ENDP\n";
+    // printASM(asmCode);
+    
+    }
+#line 1314 "parser.tab.c"
+    break;
+
+  case 11: /* param_list: param_decl  */
+#line 152 "parser.y"
+                        { log_error("param_list : param_decl\n"); }
+#line 1320 "parser.tab.c"
+    break;
+
+  case 12: /* param_list: param_list COMMA param_decl  */
+#line 153 "parser.y"
+                                         { log_error("param_list : param_list COMMA param_decl\n"); }
+#line 1326 "parser.tab.c"
+    break;
+
+  case 13: /* param_decl: type_spec term  */
+#line 156 "parser.y"
+                            { log_error("param_decl : type_spec term\n"); }
+#line 1332 "parser.tab.c"
+    break;
+
+  case 16: /* var_decl: type_spec decl_list SEMICOLON  */
+#line 164 "parser.y"
+                                         {
+    log_error("vardecl : type_spec dec_list SEMICOLON\n"); 
+    printIR(string(yyval.getSymbol())+" = "+string(yyvsp[-1].getSymbol())+";\n");
+    
+    variables += string(yyvsp[-1].getSymbol()) + " DW ?\n";
+    
+    string asmCode = "MOV AX, " + string(yyvsp[-1].getSymbol().c_str()) + "\n";
+    asmCode += "MOV " + string(yyvsp[-1].getSymbol().c_str()) + ", AX\n\n";
+    printASM(asmCode);
 }
-#line 1150 "parser.tab.c"
+#line 1347 "parser.tab.c"
     break;
 
-  case 17: /* expr: expr MULOP expr  */
-#line 75 "parser.y"
-                  { (yyval.cvar) = (yyvsp[-2].cvar) * (yyvsp[-1].cvar); }
-#line 1156 "parser.tab.c"
+  case 17: /* type_spec: INT  */
+#line 176 "parser.y"
+                {
+        log_error("type_spec : INT\n");
+        // printIR(string($$.getSymbol())+" = "+string($1.getSymbol())+" - "+string($3.getSymbol())+"\n");
+        
+        // printASM("MOV AX, "+string($2.getSymbol().c_str())+"\n");
+        // printASM("MOV "+string($$.getSymbol().c_str())+", AX\n\n");
+        
+        }
+#line 1360 "parser.tab.c"
     break;
 
-  case 18: /* expr: expr DIVOP expr  */
-#line 76 "parser.y"
-                    { (yyval.cvar) = (yyvsp[-2].cvar) / (yyvsp[-1].cvar); }
-#line 1162 "parser.tab.c"
+  case 18: /* type_spec: FLOAT  */
+#line 184 "parser.y"
+                  {log_error("type_spec : FLOAT\n");}
+#line 1366 "parser.tab.c"
     break;
 
-  case 19: /* expr: expr ADDOP expr  */
-#line 77 "parser.y"
-                  { 
-    char *str = Ctemp();
-    Symbol_Info si(str, "Temp");
-    (yyval.cvar) = si;
-    cout<< (yyval.cvar).getSymbol() << " = " << (yyvsp[-2].cvar).getSymbol() << " + " << (yyvsp[-1].cvar).getSymbol();
-    str = (yyvsp[-2].cvar) + (yyvsp[0].cvar);
-    tcnt = 1;
+  case 19: /* type_spec: DOUBLE  */
+#line 185 "parser.y"
+                   {log_error("type_spec : DOUBLE\n");}
+#line 1372 "parser.tab.c"
+    break;
+
+  case 20: /* decl_list: decl_list COMMA term  */
+#line 188 "parser.y"
+                                 {log_error("dec_list : dec_list COMMA term\n");}
+#line 1378 "parser.tab.c"
+    break;
+
+  case 21: /* decl_list: decl_list COMMA term LTHIRD CONST_INT RTHIRD  */
+#line 189 "parser.y"
+                                               {log_error("dec_list : dec_list COMMA term LTHIRD CONST_INT RTHIRD\n"); }
+#line 1384 "parser.tab.c"
+    break;
+
+  case 22: /* decl_list: term  */
+#line 190 "parser.y"
+       {log_error("dec_list : term\n");
+// $$ = $1;
+printIR(string(yyval.getSymbol()) + " = " + string(yyvsp[0].getSymbol()) + ";\n");
+string asmCode = "MOV AX, " + string(yyvsp[0].getSymbol().c_str()) + "\n";
+asmCode += "MOV " + string(yyval.getSymbol().c_str()) + ", AX\n\n";
+printASM(asmCode);
+
 }
-#line 1175 "parser.tab.c"
+#line 1397 "parser.tab.c"
     break;
 
-  case 20: /* expr: expr SUBOP expr  */
-#line 85 "parser.y"
-                    { (yyval.cvar) = (yyvsp[-2].cvar) - (yyvsp[-1].cvar); }
-#line 1181 "parser.tab.c"
+  case 23: /* decl_list: term LTHIRD CONST_INT RTHIRD  */
+#line 198 "parser.y"
+                               { log_error("dec_list : term LTHIRD CONST_INT RTHIRD\n"); }
+#line 1403 "parser.tab.c"
+    break;
+
+  case 24: /* decl_list: ass_list  */
+#line 199 "parser.y"
+           {log_error("dec_list : asslist\n");}
+#line 1409 "parser.tab.c"
+    break;
+
+  case 25: /* expr_decl: term ASSIGNOP expr SEMICOLON  */
+#line 203 "parser.y"
+                                          {
+    log_error("expr_decl : term ASSIGNOP expr SEMICOLON\n");
+    // char* str = newTemp();
+    // Symbol_Info obj(str, "TempID");
+    // $$ = $1 - $3;
+    // $$ = obj;
+    printIR(string(yyvsp[-3].getSymbol())+" = "+string(yyvsp[-1].getSymbol())+";\n");
+    
+    string asmCode = "MOV AX, " + string(yyvsp[-1].getSymbol().c_str()) + "\n";
+    asmCode += "MOV " + string(yyvsp[-3].getSymbol().c_str()) + ", AX\n\n";
+    printASM(asmCode);
+    }
+#line 1426 "parser.tab.c"
+    break;
+
+  case 26: /* ass_list: term ASSIGNOP expr  */
+#line 217 "parser.y"
+                              {
+    log_error(" asslist : term ASSIGNOP expr\n");
+    printIR(string(yyvsp[-2].getSymbol()) + " = " + string(yyvsp[0].getSymbol()) + ";\n");
+    string asmCode = "MOV AX, " + string(yyvsp[0].getSymbol().c_str()) + "\n";
+    asmCode += "MOV " + string(yyvsp[-2].getSymbol().c_str()) + ", AX\n\n";
+    printASM(asmCode);
+}
+#line 1438 "parser.tab.c"
+    break;
+
+  case 27: /* expr: CONST_INT  */
+#line 226 "parser.y"
+                   { log_error("expr : CONST_INT \n"); }
+#line 1444 "parser.tab.c"
+    break;
+
+  case 28: /* expr: CONST_FLOAT  */
+#line 227 "parser.y"
+                   { log_error("expr : CONST_FLOAT \n"); }
+#line 1450 "parser.tab.c"
+    break;
+
+  case 29: /* expr: expr MULOP expr  */
+#line 228 "parser.y"
+                       { 
+        log_error("expr : expr MULOP expr \n");
+        char* str = newTemp();
+        Symbol_Info obj(str, "TempID");
+        yyval = yyvsp[-2] * yyvsp[0];  
+        printIR(string(yyval.getSymbol()) + " = " + string(yyvsp[-2].getSymbol()) + " * " + string(yyvsp[0].getSymbol()) + "\n");
+        string asmCode = "MOV AX, " + string(yyvsp[-2].getSymbol().c_str()) + "\n"; 
+        asmCode += "MOV BX, " + string(yyvsp[0].getSymbol().c_str()) + "\n";
+        asmCode += "MUL AX, BX\n";
+        asmCode += "MOV " + string(yyval.getSymbol().c_str()) + ", AX\n\n";
+        printASM(asmCode);
+     }
+#line 1467 "parser.tab.c"
+    break;
+
+  case 30: /* expr: expr DIVOP expr  */
+#line 240 "parser.y"
+                       { 
+        log_error("expr : expr DIVOP expr \n"); 
+        char* str = newTemp();
+        Symbol_Info obj(str, "TempID");
+        yyval = yyvsp[-2] / yyvsp[0];  
+        printIR(string(yyval.getSymbol()) + " = " + string(yyvsp[-2].getSymbol()) + " / " + string(yyvsp[0].getSymbol()) + "\n");
+        string asmCode = "MOV AX, " + string(yyvsp[-2].getSymbol().c_str()) + "\n";
+        asmCode += "MOV BX, " + string(yyvsp[0].getSymbol().c_str()) + "\n";
+        asmCode += "DIV AX, BX\n";
+        asmCode += "MOV " + string(yyval.getSymbol().c_str()) + ", AX\n\n";
+        printASM(asmCode);
+     }
+#line 1484 "parser.tab.c"
+    break;
+
+  case 31: /* expr: expr ADDOP expr  */
+#line 252 "parser.y"
+                       { 
+        log_error("expr : expr ADDOP expr \n"); 
+        char* str = newTemp();
+        Symbol_Info obj(str, "TempID");
+        yyval = yyvsp[-2] + yyvsp[0];  
+        printIR(string(yyval.getSymbol()) + " = " + string(yyvsp[-2].getSymbol()) + " + " + string(yyvsp[0].getSymbol()) + "\n");
+        string asmCode = "MOV AX, " + string(yyvsp[-2].getSymbol().c_str()) + "\n";
+        asmCode += "MOV BX, " + string(yyvsp[0].getSymbol().c_str()) + "\n";
+        asmCode += "ADD AX, BX\n";
+        asmCode += "MOV " + string(yyval.getSymbol().c_str()) + ", AX\n\n";
+        printASM(asmCode);
+     }
+#line 1501 "parser.tab.c"
+    break;
+
+  case 32: /* expr: expr SUBOP expr  */
+#line 264 "parser.y"
+                       { 
+        log_error("expr : expr SUBOP expr \n"); 
+        char* str = newTemp();
+        Symbol_Info obj(str, "TempID");
+        yyval = yyvsp[-2] - yyvsp[0]; 
+        printIR(string(yyval.getSymbol()) + " = " + string(yyvsp[-2].getSymbol()) + " - " + string(yyvsp[0].getSymbol()) + "\n");
+        string asmCode = "MOV AX, " + string(yyvsp[-2].getSymbol().c_str()) + "\n";
+        asmCode += "MOV BX, " + string(yyvsp[0].getSymbol().c_str()) + "\n";
+        asmCode += "SUB AX, BX\n";
+        asmCode += "MOV " + string(yyval.getSymbol().c_str()) + ", AX\n\n";
+        printASM(asmCode);
+     }
+#line 1518 "parser.tab.c"
+    break;
+
+  case 33: /* expr: expr LOGICOP expr  */
+#line 276 "parser.y"
+                         { 
+        log_error("expr : expr LOGICOP expr \n"); 
+        char* str = newTemp();
+        Symbol_Info obj(str, "TempID");
+        yyval = obj;
+        string asmCode = "MOV AX, " + string(yyvsp[-2].getSymbol().c_str()) + "\n";
+        asmCode += "MOV BX, " + string(yyvsp[0].getSymbol().c_str()) + "\n";
+        if(yyvsp[-1].getSymbol() == "&&") {
+            printIR(string(yyval.getSymbol()) + " = " + string(yyvsp[-2].getSymbol()) + " && " + string(yyvsp[0].getSymbol()) + "\n");
+            asmCode += "AND AX, BX\n";
+        } else {
+            printIR(string(yyval.getSymbol()) + " = " + string(yyvsp[-2].getSymbol()) + " || " + string(yyvsp[0].getSymbol()) + "\n");
+            asmCode += "OR AX, BX\n";    
+        }
+        asmCode += "MOV " + string(yyval.getSymbol().c_str()) + ", AX\n\n";
+        printASM(asmCode);
+     }
+#line 1540 "parser.tab.c"
+    break;
+
+  case 34: /* expr: LPAREN expr RPAREN  */
+#line 293 "parser.y"
+                          { 
+        log_error("expr : LPAREN expr RPAREN  \n"); 
+        char* str = newTemp();
+        Symbol_Info obj(str, "TempID");
+        yyval = obj;
+        printIR(string(yyval.getSymbol()) + " = " + string(yyvsp[-1].getSymbol()) + "\n");
+        string asmCode = "MOV AX, " + string(yyvsp[-1].getSymbol().c_str()) + "\n";
+        asmCode += "MOV " + string(yyval.getSymbol().c_str()) + ", AX\n\n";
+        printASM(asmCode);
+     }
+#line 1555 "parser.tab.c"
+    break;
+
+  case 35: /* expr: term  */
+#line 303 "parser.y"
+            { 
+        log_error("expr : term \n"); 
+        char* str = newTemp();
+        Symbol_Info obj(str, "TempID");
+        yyval = obj;
+        printIR(string(yyval.getSymbol()) + " = " + string(yyvsp[0].getSymbol()) + "\n");
+        string asmCode = "MOV AX, " + string(yyvsp[0].getSymbol().c_str()) + "\n";
+        printASM(asmCode);
+     }
+#line 1569 "parser.tab.c"
+    break;
+
+  case 36: /* term: ID  */
+#line 314 "parser.y"
+          {
+    
+    Symbol_Info obj(string(yyvsp[0].getSymbol()), "ID");
+
+    if (!(st.insert(obj))) {
+        fprintf(yyout, "%s is already declared\n", yyvsp[0].getSymbol().c_str());
+    }else{
+        log_error("term: ID\n");
+    }
+}
+#line 1584 "parser.tab.c"
     break;
 
 
-#line 1185 "parser.tab.c"
+#line 1588 "parser.tab.c"
 
       default: break;
     }
@@ -1374,27 +1777,25 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 103 "parser.y"
+#line 326 "parser.y"
 
 
-int main()
+int main() 
 {
-yyparse();
-}
+  st.clear();
+  clearOutput();
+  ofstream opp("code.asm", ios::app);
+  initASM(opp, variables);
+  yyin=fopen("input.txt","r");
+  yyout=fopen("log_error.txt","w");
+  yyparse(); 
+  st.print();
 
+  string asmCode = "MOV AH, 4CH\n";
+  asmCode += "INT 21H\n";
+  asmCode += "MAIN ENDP\n";
+  asmCode += "END MAIN\n";
+  printASM(asmCode);
 
-int main(int argc, char *argv[]) {
-    clearOutput();
-//    if(argc!=2){cerr<<"error taking input from file";}
-    cout<<"Enter the input file name: ";
-    char msg[20]; cin>>msg;
-    cout<<"\nThe output will show in 202214024_log.txt & 202214024_token.txt\n\n";
-    yyin = fopen(msg,"r");
-
-    yylex();
-    //fprintf(yyout,"Total lines: %d\n", line_cnt);
-    logf(("\nTotal errors: " + to_string(error_cnt)));
-    fclose(yyin);
-    //fclose(yyout);
-    return 0;
+  return 0;
 }

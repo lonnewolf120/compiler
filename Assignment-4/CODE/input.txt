@@ -1,9 +1,7 @@
-
 float fun()
 {
 a=b+c;
 }
-
 
 int main(){ int a=100;
 float x,y;
@@ -22,4 +20,8 @@ int b;
 int d,f
 int x[19];
 
+}
+
+int paramFunc(int new, int old){
+    new = new + old;
 }

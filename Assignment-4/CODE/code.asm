@@ -1,0 +1,168 @@
+MOV AX, a
+MOV BX, b
+MUL AX, BX
+MOV t1, AX
+
+MOV AX, b
+MOV BX, b
+MUL AX, BX
+MOV t1, AX
+
+MOV AX, m
+MOV BX, n
+MUL AX, BX
+MOV t1, AX
+
+MOV AX, n
+MOV BX, 10
+MUL AX, BX
+MOV t2, AX
+
+MOV AX, a
+MOV BX, b
+MUL AX, BX
+MOV t1, AX
+
+MOV AX, b
+MOV BX, b
+MUL AX, BX
+MOV t2, AX
+
+MOV AX, m
+MOV BX, n
+MUL AX, BX
+MOV t3, AX
+
+MOV AX, n
+MOV BX, 10
+MUL AX, BX
+MOV t4, AX
+
+MOV AX, b
+MOV BX, c
+ADD AX, BX
+MOV t1, AX
+
+MOV AX, a
+MOV BX, b
+ADD AX, BX
+MOV t2, AX
+
+MOV AX, a
+MOV BX, b
+MUL AX, BX
+MOV t3, AX
+
+MOV AX, b
+MOV BX, b
+MUL AX, BX
+MOV t4, AX
+
+MOV AX, a
+MOV BX, t4
+ADD AX, BX
+MOV t5, AX
+
+MOV AX, a
+MOV BX, b
+OR AX, BX
+MOV t6, AX
+
+MOV AX, m
+MOV BX, n
+MUL AX, BX
+MOV t7, AX
+
+MOV AX, 2
+MOV BX, i
+DIV AX, BX
+MOV t8, AX
+
+MOV AX, n
+MOV BX, 10
+MUL AX, BX
+MOV t9, AX
+
+MOV AX, t7
+MOV BX, n
+ADD AX, BX
+MOV t10, AX
+
+MOV AX, b
+MOV BX, 3
+DIV AX, BX
+MOV t11, AX
+
+MOV AX, a
+MOV BX, t11
+ADD AX, BX
+MOV t12, AX
+
+MOV AX, 2
+MOV BX, 66
+ADD AX, BX
+MOV t13, AX
+
+MOV AX, t13
+MOV BX, 9.6
+ADD AX, BX
+MOV t14, AX
+
+MOV AX, 3.4
+MOV BX, 6.5
+ADD AX, BX
+MOV t15, AX
+
+MOV AX, new
+MOV BX, old
+ADD AX, BX
+MOV t16, AX
+
+MOV AX, b
+MOV BX, c
+ADD AX, BX
+MOV t1, AX
+
+MOV AX, b
+MOV BX, c
+ADD AX, BX
+MOV t1, AX
+
+MOV AX, b
+MOV BX, c
+ADD AX, BX
+MOV t1, AX
+
+MOV AX, b
+MOV BX, c
+ADD AX, BX
+MOV t1, AX
+
+MOV AX, b
+MOV AX, c
+MOV AX, b
+MOV AX, c
+MOV AX, b
+MOV AX, c
+MOV AX, b
+MOV AX, c
+MOV AX, b
+MOV AX, c
+MOV AX, b
+MOV AX, c
+MOV AX, t1
+MOV BX, t2
+ADD AX, BX
+MOV 0, AX
+
+MOV AX, 0
+MOV a, AX
+
+fun PROC
+	PUSH BP
+	MOV BP, SP
+	; Function body goes here
+	a
+	POP BP
+	RET
+fun ENDP
