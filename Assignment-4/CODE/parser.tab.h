@@ -54,48 +54,48 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    NEWLINE = 258,                 /* NEWLINE  */
-    LTHIRD = 259,                  /* LTHIRD  */
-    RTHIRD = 260,                  /* RTHIRD  */
-    LPAREN = 261,                  /* LPAREN  */
-    RPAREN = 262,                  /* RPAREN  */
-    LCURL = 263,                   /* LCURL  */
-    RCURL = 264,                   /* RCURL  */
-    COMMA = 265,                   /* COMMA  */
-    CONST_INT = 266,               /* CONST_INT  */
-    CONST_FLOAT = 267,             /* CONST_FLOAT  */
-    INT = 268,                     /* INT  */
-    FLOAT = 269,                   /* FLOAT  */
-    DOUBLE = 270,                  /* DOUBLE  */
-    ID = 271,                      /* ID  */
-    ADDOP = 272,                   /* ADDOP  */
-    SUBOP = 273,                   /* SUBOP  */
-    MULOP = 274,                   /* MULOP  */
-    DIVOP = 275,                   /* DIVOP  */
-    ASSIGNOP = 276,                /* ASSIGNOP  */
-    SEMICOLON = 277,               /* SEMICOLON  */
-    RELOP = 278,                   /* RELOP  */
-    INCOP = 279,                   /* INCOP  */
-    LOGICOP = 280,                 /* LOGICOP  */
-    NOT = 281                      /* NOT  */
+    LTHIRD = 258,                  /* LTHIRD  */
+    RTHIRD = 259,                  /* RTHIRD  */
+    LPAREN = 260,                  /* LPAREN  */
+    RPAREN = 261,                  /* RPAREN  */
+    LCURL = 262,                   /* LCURL  */
+    RCURL = 263,                   /* RCURL  */
+    COMMA = 264,                   /* COMMA  */
+    ID = 265,                      /* ID  */
+    ADDOP = 266,                   /* ADDOP  */
+    SUBOP = 267,                   /* SUBOP  */
+    MULOP = 268,                   /* MULOP  */
+    DIVOP = 269,                   /* DIVOP  */
+    MODOP = 270,                   /* MODOP  */
+    ASSIGNOP = 271,                /* ASSIGNOP  */
+    SEMICOLON = 272,               /* SEMICOLON  */
+    RELOP = 273,                   /* RELOP  */
+    INCOP = 274,                   /* INCOP  */
+    DECOP = 275,                   /* DECOP  */
+    LOGICOP = 276,                 /* LOGICOP  */
+    NOT = 277,                     /* NOT  */
+    CONST_INT = 278,               /* CONST_INT  */
+    CONST_FLOAT = 279,             /* CONST_FLOAT  */
+    INT = 280,                     /* INT  */
+    FLOAT = 281,                   /* FLOAT  */
+    DOUBLE = 282,                  /* DOUBLE  */
+    CHAR = 283,                    /* CHAR  */
+    IF = 284,                      /* IF  */
+    ELSE = 285,                    /* ELSE  */
+    FOR = 286,                     /* FOR  */
+    WHILE = 287,                   /* WHILE  */
+    RETURN = 288,                  /* RETURN  */
+    BREAK = 289,                   /* BREAK  */
+    CONTINUE = 290,                /* CONTINUE  */
+    VOID = 291,                    /* VOID  */
+    MAIN = 292                     /* MAIN  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-union YYSTYPE
-{
-#line 24 "parser.y"
-
-double dvar;
-double CONST_FLOAT;
-char *cvar;
-
-#line 96 "parser.tab.h"
-
-};
-typedef union YYSTYPE YYSTYPE;
+typedef int YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif

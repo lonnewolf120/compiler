@@ -1,0 +1,108 @@
+Line Number: 3
+type_spec : INT
+Line Number: 3
+term: ID
+Line Number: 3
+dec_list : term
+Line Number: 3
+vardecl : type_spec dec_list SEMICOLON
+Line Number: 3
+unit : var_decl
+Line Number: 3
+stmt : unit
+Line Number: 4
+type_spec : INT
+Line Number: 4
+term: ID
+Line Number: 4
+dec_list : term
+Line Number: 4
+vardecl : type_spec dec_list SEMICOLON
+Line Number: 4
+unit : var_decl
+Line Number: 4
+stmt : stmt unit
+Line Number: 5
+type_spec : INT
+Line Number: 5
+term: ID
+Line Number: 5
+dec_list : term
+Line Number: 5
+vardecl : type_spec dec_list SEMICOLON
+Line Number: 5
+unit : var_decl
+Line Number: 5
+stmt : stmt unit
+a is already declared
+Line Number: 7
+expr : CONST_INT 
+Line Number: 7
+expr_decl : term ASSIGNOP expr SEMICOLON
+Line Number: 7
+unit : expr_decl
+Line Number: 7
+stmt : stmt unit
+c is already declared
+Line Number: 8
+expr : CONST_INT 
+Line Number: 8
+expr_decl : term ASSIGNOP expr SEMICOLON
+Line Number: 8
+unit : expr_decl
+Line Number: 8
+stmt : stmt unit
+d is already declared
+a is already declared
+Line Number: 10
+expr : term 
+c is already declared
+Line Number: 10
+expr : term 
+Line Number: 10
+expr : CONST_INT 
+Line Number: 10
+expr : expr MULOP expr 
+Line Number: 10
+expr : expr ADDOP expr 
+Line Number: 10
+expr : CONST_INT 
+Line Number: 10
+expr : expr SUBOP expr 
+Line Number: 10
+expr_decl : term ASSIGNOP expr SEMICOLON
+Line Number: 10
+unit : expr_decl
+Line Number: 10
+stmt : stmt unit
+d is already declared
+a is already declared
+Line Number: 11
+expr : term 
+c is already declared
+Line Number: 11
+expr : term 
+Line Number: 11
+expr : expr SUBOP expr 
+Line Number: 11
+expr : CONST_INT 
+Line Number: 11
+expr : CONST_INT 
+Line Number: 11
+expr : expr SUBOP expr 
+Line Number: 11
+expr : LPAREN expr RPAREN  
+Line Number: 11
+expr : CONST_INT 
+Line Number: 11
+expr : expr MULOP expr 
+Line Number: 11
+expr : expr SUBOP expr 
+Line Number: 11
+expr_decl : term ASSIGNOP expr SEMICOLON
+Line Number: 11
+unit : expr_decl
+Line Number: 11
+stmt : stmt unit
+Line Number: 14
+prog : MAIN LPAREN RPAREN LCURL stmt RCURL

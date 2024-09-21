@@ -121,8 +121,15 @@ unit : var_decl  { log_error("unit : var_decl\n"); }
      ;
 
 func_decl : type_spec term LPAREN RPAREN LCURL stmt RCURL {log_error("func_decl : type_spec term LPAREN RPAREN LCURL stmt RCURL\n"); }
+          | type_spec term LPAREN param_list RPAREN LCURL stmt RCURL {log_error("func_decl : type_spec term LPAREN param_list RPAREN LCURL stmt RCURL\n"); }
           ;
 
+param_list : param_decl { log_error("param_list : param_decl\n"); }
+           | param_list COMMA param_decl { log_error("param_list : param_list COMMA param_decl\n"); }
+           ;
+
+param_decl : type_spec term { log_error("param_decl : type_spec term\n"); }
+           ;
 
 
 mul_stmt : mul_stmt func_decl 
