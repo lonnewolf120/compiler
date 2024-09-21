@@ -67,89 +67,94 @@
 
 
 /* First part of user prologue.  */
-#line 1 "parser.y"
+#line 1 "parser2.y"
 
 #include "symboltable2.h"
-#define YYSTYPE Symbol_Info
+#include <vector>
+#include <string>
+#include <fstream>
+#include <iostream>
+#include <cstdio>
+#include <cstdlib>
 
+#define YYSTYPE Symbol_Info
 
 extern FILE *yyin, *yyout;
 extern int line_cnt;
-string variables="";
-// int line_cnt=1, error_cnt=0;
+std::vector<std::string> variables; 
 
-// ofstream outFile("logerror.txt");  
+std::vector<std::string> asm_code[4];
 
 int yylex();
 
-
 SymbolTable st;
 
-int temp_counter=1;
-char* newTemp(){
-    char* temp;
-    temp = (char*) malloc(15*sizeof(char));
-    sprintf(temp, "t%d", temp_counter);
-    temp_counter++;
-    return temp;
-}
-
-void log_error(const char *msg=""){
+int temp_counter = 1;
+void log_error(const char *msg = "") {
     fprintf(yyout, "Line Number: %d\n", line_cnt);
     fprintf(yyout, "%s", msg);
 }
 
-void yyerror (const char *str) {
+void yyerror(const char *str) {
     fprintf(yyout, "%s\n", str);
 }
 
-
-void printASM(string str) {
-    ofstream op2;
-    op2.open("code.asm", ios::app);
-    if (!op2.is_open()) {
-        cerr << "Error opening file.\n";
-    }
-    op2<<str;
-    op2.close();
-}
-void initASM(ofstream &op, string variables){
-    op << ".MODEL SMALL\n";
-    op << ".STACK 100H\n";
-    op << ".DATA\n";
-    op << variables;
-    op << ".CODE\n";
-    op << "MAIN PROC\n";
-    op << "\tMOV AX, @DATA\n";
-    op << "\tMOV DS, AX\n";
+void printASM(std::string str, int i = 2) { 
+    asm_code[i].push_back(str);
 }
 
-void printIR(string str) {
-    ofstream op2;
-    op2.open("code.ir", ios::app);
+char* newTemp() {
+    char* temp;
+    temp = (char*) malloc(15 * sizeof(char));
+    sprintf(temp, "t%d", temp_counter);
+    printASM(("t"+to_string(temp_counter)+" DW ?\n"), 1);
+    temp_counter++;
+    return temp;
+}
+
+void printIR(std::string str) {
+    std::ofstream op2;
+    op2.open("code.ir", std::ios::app);
     if (!op2.is_open()) {
-        cerr << "Error opening file.\n";
+        std::cerr << "Error opening file.\n";
     }
-    op2<<str;
+    op2 << str;
     op2.close();
+}
+
+void printVar(string varName){
+    string asmCode = "\tMOV AH, 02H\n";
+    asmCode += "\tMOV DX, " + varName + "\n";
+    asmCode += "\tINT 21H\n";
+    printASM(asmCode, 2);
 }
 
 void clearOutput() {
-    ofstream clearout;
-    clearout.open("log_error.txt", ios::trunc);
+    std::ofstream clearout;
+    clearout.open("log_error.txt", std::ios::trunc);
     if (!clearout.is_open()) {
-        cerr << "Error delete file contents.\n";
+        std::cerr << "Error deleting file contents.\n";
     }
     clearout.close();
-    clearout.open("table.txt", ios::trunc);
+    clearout.open("table.txt", std::ios::trunc);
     if (!clearout.is_open()) {
-        cerr << "Error delete file contents.\n";
+        std::cerr << "Error deleting file contents.\n";
+    }
+    clearout.close();
+    clearout.open("code.ir", std::ios::trunc);
+    if (!clearout.is_open()) {
+        std::cerr << "Error deleting file contents.\n";
+    }
+    clearout.close();
+    clearout.open("code.asm", std::ios::trunc);
+    if (!clearout.is_open()) {
+        std::cerr << "Error deleting file contents.\n";
     }
     clearout.close();
 }
 
 
-#line 153 "parser.tab.c"
+#line 158 "parser2.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -172,7 +177,7 @@ void clearOutput() {
 #  endif
 # endif
 
-#include "parser.tab.h"
+#include "parser2.tab.h"
 /* Symbol kind.  */
 enum yysymbol_kind_t
 {
@@ -216,20 +221,15 @@ enum yysymbol_kind_t
   YYSYMBOL_VOID = 36,                      /* VOID  */
   YYSYMBOL_MAIN = 37,                      /* MAIN  */
   YYSYMBOL_YYACCEPT = 38,                  /* $accept  */
-  YYSYMBOL_line = 39,                      /* line  */
+  YYSYMBOL_prog = 39,                      /* prog  */
   YYSYMBOL_stmt = 40,                      /* stmt  */
   YYSYMBOL_unit = 41,                      /* unit  */
-  YYSYMBOL_func_decl = 42,                 /* func_decl  */
-  YYSYMBOL_param_list = 43,                /* param_list  */
-  YYSYMBOL_param_decl = 44,                /* param_decl  */
-  YYSYMBOL_mul_stmt = 45,                  /* mul_stmt  */
-  YYSYMBOL_var_decl = 46,                  /* var_decl  */
-  YYSYMBOL_type_spec = 47,                 /* type_spec  */
-  YYSYMBOL_decl_list = 48,                 /* decl_list  */
-  YYSYMBOL_expr_decl = 49,                 /* expr_decl  */
-  YYSYMBOL_ass_list = 50,                  /* ass_list  */
-  YYSYMBOL_expr = 51,                      /* expr  */
-  YYSYMBOL_term = 52                       /* term  */
+  YYSYMBOL_var_decl = 42,                  /* var_decl  */
+  YYSYMBOL_type_spec = 43,                 /* type_spec  */
+  YYSYMBOL_decl_list = 44,                 /* decl_list  */
+  YYSYMBOL_expr_decl = 45,                 /* expr_decl  */
+  YYSYMBOL_expr = 46,                      /* expr  */
+  YYSYMBOL_term = 47                       /* term  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -555,18 +555,18 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  15
+#define YYFINAL  4
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   102
+#define YYLAST   53
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  38
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  15
+#define YYNNTS  10
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  36
+#define YYNRULES  23
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  70
+#define YYNSTATES  42
 
 /* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   292
@@ -617,12 +617,11 @@ static const yytype_int8 yytranslate[] =
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-static const yytype_int16 yyrline[] =
+static const yytype_uint8 yyrline[] =
 {
-       0,    96,    96,    97,   100,   101,   102,   105,   106,   109,
-     124,   130,   131,   134,   138,   139,   142,   154,   162,   163,
-     166,   167,   168,   176,   177,   181,   195,   204,   205,   206,
-     219,   233,   246,   259,   276,   286,   297
+       0,    99,    99,   104,   105,   106,   109,   110,   113,   123,
+     126,   127,   130,   133,   145,   146,   147,   162,   176,   189,
+     202,   220,   231,   243
 };
 #endif
 
@@ -643,9 +642,8 @@ static const char *const yytname[] =
   "MULOP", "DIVOP", "MODOP", "ASSIGNOP", "SEMICOLON", "RELOP", "INCOP",
   "DECOP", "LOGICOP", "NOT", "CONST_INT", "CONST_FLOAT", "INT", "FLOAT",
   "DOUBLE", "CHAR", "IF", "ELSE", "FOR", "WHILE", "RETURN", "BREAK",
-  "CONTINUE", "VOID", "MAIN", "$accept", "line", "stmt", "unit",
-  "func_decl", "param_list", "param_decl", "mul_stmt", "var_decl",
-  "type_spec", "decl_list", "expr_decl", "ass_list", "expr", "term", YY_NULLPTR
+  "CONTINUE", "VOID", "MAIN", "$accept", "prog", "stmt", "unit",
+  "var_decl", "type_spec", "decl_list", "expr_decl", "expr", "term", YY_NULLPTR
 };
 
 static const char *
@@ -655,7 +653,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-19)
+#define YYPACT_NINF (-36)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -669,13 +667,11 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-       5,   -19,   -19,   -19,   -19,   -19,     3,    28,   -19,   -19,
-      34,   -19,    -5,   -19,    -7,   -19,   -19,    -5,   -19,    -5,
-      -1,   -19,     8,    46,    24,    20,    -5,   -19,   -13,    -4,
-      46,    46,   -19,   -19,    70,   -19,    36,    45,    73,    79,
-     -19,    -5,    81,    65,    46,    46,    46,    46,   -19,    46,
-      74,   -19,     5,    89,    34,   -19,   -19,    76,    76,   -19,
-     -19,    61,    94,    10,     5,   -19,   -19,   -19,    40,   -19
+     -35,     2,     8,    10,   -36,    15,    -1,   -36,   -36,   -36,
+     -36,   -36,    -7,   -36,   -36,     7,   -36,    14,   -36,   -36,
+       6,   -36,     5,   -36,     5,   -36,   -36,    28,   -36,     0,
+       5,     5,     5,     5,   -36,     5,   -36,    -9,    -9,   -36,
+     -36,    39
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -683,27 +679,23 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       0,     6,    36,    17,    18,    19,     0,     3,     5,    15,
-       2,     7,     0,     8,     0,     1,     4,     0,    14,     0,
-       0,    24,    22,     0,    22,     0,     0,    16,     0,     0,
-       0,     0,    27,    28,     0,    35,    20,     0,     0,     0,
-      11,     0,    26,     0,     0,     0,     0,     0,    25,     0,
-       0,    23,     0,     0,     0,    13,    34,    31,    32,    29,
-      30,    33,     0,     0,     0,    12,    21,     9,     0,    10
+       0,     0,     0,     0,     1,     0,     0,     5,    23,     9,
+      10,    11,     0,     4,     6,     0,     7,     0,     2,     3,
+       0,    12,     0,     8,     0,    14,    15,     0,    22,     0,
+       0,     0,     0,     0,    13,     0,    21,    18,    19,    16,
+      17,    20
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -19,   -19,   -18,    -6,    90,   -19,    47,   -19,   -19,     4,
-     -19,   -19,   -19,    -2,     0
+     -36,   -36,   -36,    19,   -36,   -36,   -36,   -36,     3,    31
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     6,     7,     8,     9,    39,    40,    10,    11,    17,
-      20,    13,    21,    34,    35
+       0,     2,    12,    13,    14,    15,    20,    16,    27,    28
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -711,63 +703,49 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-      14,    16,    38,    15,    12,     2,     1,    14,    26,    23,
-      37,    28,    22,    29,    19,     2,    27,    24,    67,    25,
-       2,     3,     4,     5,    30,    29,    36,    28,    42,    43,
-       3,     4,     5,    41,    63,     3,     4,     5,     2,    50,
-      30,    55,    57,    58,    59,    60,    68,    61,    69,    51,
-       2,    31,    14,     3,     4,     5,     2,    16,    41,     3,
-       4,     5,    16,    14,    14,     3,     4,     5,    14,    32,
-      33,    56,    44,    45,    46,    47,    44,    45,    46,    47,
-      52,    44,    45,    46,    47,    53,    49,    48,    54,    46,
-      47,    49,    44,    45,    46,    47,    64,    62,    66,     0,
-      18,    65,    49
+       7,    18,     1,     8,    32,    33,    36,     3,     4,     8,
+      24,    30,    31,    32,    33,     8,     5,     8,     9,    10,
+      11,    35,     6,    23,     9,    10,    11,    29,    25,    26,
+      22,    19,     0,    37,    38,    39,    40,    17,    41,    30,
+      31,    32,    33,    17,     0,    34,    21,     0,     0,    35,
+      30,    31,    32,    33
 };
 
 static const yytype_int8 yycheck[] =
 {
-       0,     7,     6,     0,     0,    10,     1,     7,     9,    16,
-      23,     3,    12,     5,    10,    10,    17,    17,     8,    19,
-      10,    25,    26,    27,    16,     5,    26,     3,    30,    31,
-      25,    26,    27,    29,    52,    25,    26,    27,    10,     3,
-      16,    41,    44,    45,    46,    47,    64,    49,     8,     4,
-      10,     5,    52,    25,    26,    27,    10,    63,    54,    25,
-      26,    27,    68,    63,    64,    25,    26,    27,    68,    23,
-      24,     6,    11,    12,    13,    14,    11,    12,    13,    14,
-       7,    11,    12,    13,    14,     6,    21,    17,     9,    13,
-      14,    21,    11,    12,    13,    14,     7,    23,     4,    -1,
-      10,    54,    21
+       1,     8,    37,    10,    13,    14,     6,     5,     0,    10,
+       5,    11,    12,    13,    14,    10,     6,    10,    25,    26,
+      27,    21,     7,    17,    25,    26,    27,    24,    23,    24,
+      16,    12,    -1,    30,    31,    32,    33,     6,    35,    11,
+      12,    13,    14,    12,    -1,    17,    15,    -1,    -1,    21,
+      11,    12,    13,    14
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     1,    10,    25,    26,    27,    39,    40,    41,    42,
-      45,    46,    47,    49,    52,     0,    41,    47,    42,    47,
-      48,    50,    52,    16,    52,    52,     9,    17,     3,     5,
-      16,     5,    23,    24,    51,    52,    52,    23,     6,    43,
-      44,    47,    51,    51,    11,    12,    13,    14,    17,    21,
-       3,     4,     7,     6,     9,    52,     6,    51,    51,    51,
-      51,    51,    23,    40,     7,    44,     4,     8,    40,     8
+       0,    37,    39,     5,     0,     6,     7,     1,    10,    25,
+      26,    27,    40,    41,    42,    43,    45,    47,     8,    41,
+      44,    47,    16,    17,     5,    23,    24,    46,    47,    46,
+      11,    12,    13,    14,    17,    21,     6,    46,    46,    46,
+      46,    46
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    38,    39,    39,    40,    40,    40,    41,    41,    42,
-      42,    43,    43,    44,    45,    45,    46,    47,    47,    47,
-      48,    48,    48,    48,    48,    49,    50,    51,    51,    51,
-      51,    51,    51,    51,    51,    51,    52
+       0,    38,    39,    40,    40,    40,    41,    41,    42,    43,
+      43,    43,    44,    45,    46,    46,    46,    46,    46,    46,
+      46,    46,    46,    47
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     1,     1,     2,     1,     1,     1,     1,     7,
-       8,     1,     3,     2,     2,     1,     3,     1,     1,     1,
-       3,     6,     1,     4,     1,     4,     3,     1,     1,     3,
-       3,     3,     3,     3,     3,     1,     1
+       0,     2,     6,     2,     1,     1,     1,     1,     3,     1,
+       1,     1,     1,     4,     1,     1,     3,     3,     3,     3,
+       3,     3,     1,     1
 };
 
 
@@ -1230,342 +1208,254 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-  case 4: /* stmt: stmt unit  */
-#line 100 "parser.y"
+  case 2: /* prog: MAIN LPAREN RPAREN LCURL stmt RCURL  */
+#line 99 "parser2.y"
+                                          { 
+    log_error("prog : MAIN LPAREN RPAREN LCURL stmt RCURL\n"); 
+    }
+#line 1217 "parser2.tab.c"
+    break;
+
+  case 3: /* stmt: stmt unit  */
+#line 104 "parser2.y"
                  { log_error("stmt : stmt unit\n");}
-#line 1237 "parser.tab.c"
+#line 1223 "parser2.tab.c"
     break;
 
-  case 5: /* stmt: unit  */
-#line 101 "parser.y"
+  case 4: /* stmt: unit  */
+#line 105 "parser2.y"
             {log_error("stmt : unit\n"); }
-#line 1243 "parser.tab.c"
+#line 1229 "parser2.tab.c"
     break;
 
-  case 6: /* stmt: error  */
-#line 102 "parser.y"
+  case 5: /* stmt: error  */
+#line 106 "parser2.y"
              {log_error(""); yyerror("syntax error: invalid expression");}
-#line 1249 "parser.tab.c"
+#line 1235 "parser2.tab.c"
     break;
 
-  case 7: /* unit: var_decl  */
-#line 105 "parser.y"
+  case 6: /* unit: var_decl  */
+#line 109 "parser2.y"
                  { log_error("unit : var_decl\n"); }
-#line 1255 "parser.tab.c"
+#line 1241 "parser2.tab.c"
     break;
 
-  case 8: /* unit: expr_decl  */
-#line 106 "parser.y"
+  case 7: /* unit: expr_decl  */
+#line 110 "parser2.y"
                   { log_error("unit : expr_decl\n"); }
-#line 1261 "parser.tab.c"
+#line 1247 "parser2.tab.c"
     break;
 
-  case 9: /* func_decl: type_spec term LPAREN RPAREN LCURL stmt RCURL  */
-#line 109 "parser.y"
-                                                          {
-    log_error("func_decl : type_spec term LPAREN RPAREN LCURL stmt RCURL\n"); 
-    
-    string funcName = string(yyvsp[-5].getSymbol());
-    string asmCode = funcName + " PROC\n";
-    asmCode += "\tPUSH BP\n";
-    asmCode += "\tMOV BP, SP\n";
-    asmCode += "\t; Function body goes here\n";
-    asmCode += "\t"+ string(yyvsp[-1].getSymbol()) +"\n";
-    asmCode += "\tPOP BP\n";
-    asmCode += "\tRET\n";
-    asmCode += funcName + " ENDP\n";
-    printASM(asmCode);
-
-    }
-#line 1281 "parser.tab.c"
-    break;
-
-  case 10: /* func_decl: type_spec term LPAREN param_list RPAREN LCURL stmt RCURL  */
-#line 124 "parser.y"
-                                                               {
-    log_error("func_decl : type_spec term LPAREN param_list RPAREN LCURL stmt RCURL\n"); 
-    
-    }
-#line 1290 "parser.tab.c"
-    break;
-
-  case 11: /* param_list: param_decl  */
-#line 130 "parser.y"
-                        { log_error("param_list : param_decl\n"); }
-#line 1296 "parser.tab.c"
-    break;
-
-  case 12: /* param_list: param_list COMMA param_decl  */
-#line 131 "parser.y"
-                                         { log_error("param_list : param_list COMMA param_decl\n"); }
-#line 1302 "parser.tab.c"
-    break;
-
-  case 13: /* param_decl: type_spec term  */
-#line 134 "parser.y"
-                            { log_error("param_decl : type_spec term\n"); }
-#line 1308 "parser.tab.c"
-    break;
-
-  case 16: /* var_decl: type_spec decl_list SEMICOLON  */
-#line 142 "parser.y"
+  case 8: /* var_decl: type_spec decl_list SEMICOLON  */
+#line 113 "parser2.y"
                                          {
     log_error("vardecl : type_spec dec_list SEMICOLON\n"); 
-    printIR(string(yyval.getSymbol())+" = "+string(yyvsp[-1].getSymbol())+";\n");
-    
-    variables += string(yyvsp[-1].getSymbol()) + " DW ?\n";
-    
-    string asmCode = "MOV AX, " + string(yyvsp[-1].getSymbol().c_str()) + "\n";
-    asmCode += "MOV " + string(yyvsp[-1].getSymbol().c_str()) + ", AX\n\n";
-    printASM(asmCode);
+    string var = yyvsp[-1].getSymbol() + " DW ?\n";
+    printASM(var, 1);
+    variables.push_back(string(yyvsp[-1].getSymbol()));
+    std::string asmCode = "\tMOV AX, " + yyvsp[-1].getSymbol() + "\n";
+    asmCode += "\tMOV " + yyvsp[-1].getSymbol() + ", AX\n\n";
 }
-#line 1323 "parser.tab.c"
+#line 1260 "parser2.tab.c"
     break;
 
-  case 17: /* type_spec: INT  */
-#line 154 "parser.y"
+  case 9: /* type_spec: INT  */
+#line 123 "parser2.y"
                 {
         log_error("type_spec : INT\n");
-        // printIR(string($$.getSymbol())+" = "+string($1.getSymbol())+" - "+string($3.getSymbol())+"\n");
-        
-        // printASM("MOV AX, "+string($2.getSymbol().c_str())+"\n");
-        // printASM("MOV "+string($$.getSymbol().c_str())+", AX\n\n");
-        
         }
-#line 1336 "parser.tab.c"
+#line 1268 "parser2.tab.c"
     break;
 
-  case 18: /* type_spec: FLOAT  */
-#line 162 "parser.y"
+  case 10: /* type_spec: FLOAT  */
+#line 126 "parser2.y"
                   {log_error("type_spec : FLOAT\n");}
-#line 1342 "parser.tab.c"
+#line 1274 "parser2.tab.c"
     break;
 
-  case 19: /* type_spec: DOUBLE  */
-#line 163 "parser.y"
+  case 11: /* type_spec: DOUBLE  */
+#line 127 "parser2.y"
                    {log_error("type_spec : DOUBLE\n");}
-#line 1348 "parser.tab.c"
+#line 1280 "parser2.tab.c"
     break;
 
-  case 20: /* decl_list: decl_list COMMA term  */
-#line 166 "parser.y"
-                                 {log_error("dec_list : dec_list COMMA term\n");}
-#line 1354 "parser.tab.c"
+  case 12: /* decl_list: term  */
+#line 130 "parser2.y"
+                 {log_error("dec_list : term\n");}
+#line 1286 "parser2.tab.c"
     break;
 
-  case 21: /* decl_list: decl_list COMMA term LTHIRD CONST_INT RTHIRD  */
-#line 167 "parser.y"
-                                                       {log_error("dec_list : dec_list COMMA term LTHIRD CONST_INT RTHIRD\n"); }
-#line 1360 "parser.tab.c"
-    break;
-
-  case 22: /* decl_list: term  */
-#line 168 "parser.y"
-               {log_error("dec_list : term\n");
-        // $$ = $1;
-        printIR(string(yyval.getSymbol()) + " = " + string(yyvsp[0].getSymbol()) + ";\n");
-        string asmCode = "MOV AX, " + string(yyvsp[0].getSymbol().c_str()) + "\n";
-        asmCode += "MOV " + string(yyval.getSymbol().c_str()) + ", AX\n\n";
-        printASM(asmCode);
-
-        }
-#line 1373 "parser.tab.c"
-    break;
-
-  case 23: /* decl_list: term LTHIRD CONST_INT RTHIRD  */
-#line 176 "parser.y"
-                                       { log_error("dec_list : term LTHIRD CONST_INT RTHIRD\n"); }
-#line 1379 "parser.tab.c"
-    break;
-
-  case 24: /* decl_list: ass_list  */
-#line 177 "parser.y"
-                   {log_error("dec_list : asslist\n");}
-#line 1385 "parser.tab.c"
-    break;
-
-  case 25: /* expr_decl: term ASSIGNOP expr SEMICOLON  */
-#line 181 "parser.y"
+  case 13: /* expr_decl: term ASSIGNOP expr SEMICOLON  */
+#line 133 "parser2.y"
                                           {
     log_error("expr_decl : term ASSIGNOP expr SEMICOLON\n");
     // char* str = newTemp();
     // Symbol_Info obj(str, "TempID");
-    // $$ = $1 - $3;
     // $$ = obj;
-    printIR(string(yyvsp[-3].getSymbol())+" = "+string(yyvsp[-1].getSymbol())+";\n");
-    
-    string asmCode = "MOV AX, " + string(yyvsp[-1].getSymbol().c_str()) + "\n";
-    asmCode += "MOV " + string(yyvsp[-3].getSymbol().c_str()) + ", AX\n\n";
+    printIR(yyvsp[-3].getSymbol() + " = " + yyvsp[-1].getSymbol() + ";\n");
+    std::string asmCode = "\tMOV AX, " + yyvsp[-1].getSymbol() + "\n";
+    asmCode += "\tMOV " + yyvsp[-3].getSymbol() + ", AX\n\n";
     printASM(asmCode);
     }
-#line 1402 "parser.tab.c"
+#line 1301 "parser2.tab.c"
     break;
 
-  case 26: /* ass_list: term ASSIGNOP expr  */
-#line 195 "parser.y"
-                              {
-    log_error(" asslist : term ASSIGNOP expr\n");
-    printIR(string(yyvsp[-2].getSymbol()) + " = " + string(yyvsp[0].getSymbol()) + ";\n");
-    string asmCode = "MOV AX, " + string(yyvsp[0].getSymbol().c_str()) + "\n";
-    asmCode += "MOV " + string(yyvsp[-2].getSymbol().c_str()) + ", AX\n\n";
-    printASM(asmCode);
-}
-#line 1414 "parser.tab.c"
-    break;
-
-  case 27: /* expr: CONST_INT  */
-#line 204 "parser.y"
+  case 14: /* expr: CONST_INT  */
+#line 145 "parser2.y"
                    { log_error("expr : CONST_INT \n"); }
-#line 1420 "parser.tab.c"
+#line 1307 "parser2.tab.c"
     break;
 
-  case 28: /* expr: CONST_FLOAT  */
-#line 205 "parser.y"
+  case 15: /* expr: CONST_FLOAT  */
+#line 146 "parser2.y"
                    { log_error("expr : CONST_FLOAT \n"); }
-#line 1426 "parser.tab.c"
+#line 1313 "parser2.tab.c"
     break;
 
-  case 29: /* expr: expr MULOP expr  */
-#line 206 "parser.y"
+  case 16: /* expr: expr MULOP expr  */
+#line 147 "parser2.y"
                        { 
         log_error("expr : expr MULOP expr \n");
+        std::string asmCode = "\tXOR DX, DX ;need to clear DX first\n"; 
+        asmCode += "\tMOV AX, " + yyvsp[-2].getSymbol() + "\n"; 
+        asmCode += "\tMOV BX, " + yyvsp[0].getSymbol() + "\n";
+        asmCode += "\tMUL BX\n";
+        asmCode += "\tMOV " + yyval.getSymbol() + ", AX\n\n";
+
         char* str = newTemp();
         Symbol_Info obj(str, "TempID");
-        // $$ = $1 * $3;
-        yyval=obj;  
-        printIR(string(yyval.getSymbol()) + " = " + string(yyvsp[-2].getSymbol()) + " * " + string(yyvsp[0].getSymbol()) + "\n");
-        string asmCode = "MOV AX, " + string(yyvsp[-2].getSymbol().c_str()) + "\n"; 
-        asmCode += "MOV BX, " + string(yyvsp[0].getSymbol().c_str()) + "\n";
-        asmCode += "MUL AX, BX\n";
-        asmCode += "MOV " + string(yyval.getSymbol().c_str()) + ", AX\n\n";
+        yyval = obj;  
+        printIR(yyval.getSymbol() + " = " + yyvsp[-2].getSymbol() + " * " + yyvsp[0].getSymbol() + "\n");
+        
         printASM(asmCode);
      }
-#line 1444 "parser.tab.c"
+#line 1333 "parser2.tab.c"
     break;
 
-  case 30: /* expr: expr DIVOP expr  */
-#line 219 "parser.y"
+  case 17: /* expr: expr DIVOP expr  */
+#line 162 "parser2.y"
                        { 
         log_error("expr : expr DIVOP expr \n"); 
+        std::string asmCode = "\tXOR DX, DX ;need to clear DX first\n";
+        asmCode += "\tMOV AX, " + yyvsp[-2].getSymbol() + "\n";
+        asmCode += "\tMOV BX, " + yyvsp[0].getSymbol() + "\n";
+        asmCode += "\tDIV BX\n";
+        asmCode += "\tMOV " + yyval.getSymbol() + ", AX\n\n";
+
         char* str = newTemp();
         Symbol_Info obj(str, "TempID");
-
-        // $$ = $1 / $3;  
-        yyval=obj;
-        printIR(string(yyval.getSymbol()) + " = " + string(yyvsp[-2].getSymbol()) + " / " + string(yyvsp[0].getSymbol()) + "\n");
-        string asmCode = "MOV AX, " + string(yyvsp[-2].getSymbol().c_str()) + "\n";
-        asmCode += "MOV BX, " + string(yyvsp[0].getSymbol().c_str()) + "\n";
-        asmCode += "DIV AX, BX\n";
-        asmCode += "MOV " + string(yyval.getSymbol().c_str()) + ", AX\n\n";
+        yyval = obj;
+        printIR(yyval.getSymbol() + " = " + yyvsp[-2].getSymbol() + " / " + yyvsp[0].getSymbol() + "\n");
         printASM(asmCode);
      }
-#line 1463 "parser.tab.c"
+#line 1352 "parser2.tab.c"
     break;
 
-  case 31: /* expr: expr ADDOP expr  */
-#line 233 "parser.y"
+  case 18: /* expr: expr ADDOP expr  */
+#line 176 "parser2.y"
                        { 
         log_error("expr : expr ADDOP expr \n"); 
         char* str = newTemp();
         Symbol_Info obj(str, "TempID");
-        // $$ = $1 + $3;
+        std::string asmCode = "\tMOV AX, " + yyvsp[-2].getSymbol() + "\n";
+        asmCode += "\tMOV BX, " + yyvsp[0].getSymbol() + "\n";
+        asmCode += "\tADD AX, BX\n";
+        asmCode += "\tMOV " + yyval.getSymbol() + ", AX\n\n";
+
         yyval = obj;  
-        printIR(string(yyval.getSymbol()) + " = " + string(yyvsp[-2].getSymbol()) + " + " + string(yyvsp[0].getSymbol()) + "\n");
-        string asmCode = "MOV AX, " + string(yyvsp[-2].getSymbol().c_str()) + "\n";
-        asmCode += "MOV BX, " + string(yyvsp[0].getSymbol().c_str()) + "\n";
-        asmCode += "ADD AX, BX\n";
-        asmCode += "MOV " + string(yyval.getSymbol().c_str()) + ", AX\n\n";
+        printIR(yyval.getSymbol() + " = " + yyvsp[-2].getSymbol() + " + " + yyvsp[0].getSymbol() + "\n");
         printASM(asmCode);
      }
-#line 1481 "parser.tab.c"
+#line 1370 "parser2.tab.c"
     break;
 
-  case 32: /* expr: expr SUBOP expr  */
-#line 246 "parser.y"
+  case 19: /* expr: expr SUBOP expr  */
+#line 189 "parser2.y"
                        { 
         log_error("expr : expr SUBOP expr \n"); 
         char* str = newTemp();
         Symbol_Info obj(str, "TempID");
-        // $$ = $1 - $3; 
+        std::string asmCode = "\tMOV AX, " + yyvsp[-2].getSymbol() + "\n";
+        asmCode += "\tMOV BX, " + yyvsp[0].getSymbol() + "\n";
+        asmCode += "\tSUB AX, BX\n";
+        asmCode += "\tMOV " + yyval.getSymbol() + ", AX\n\n";
+
         yyval = obj;
-        printIR(string(yyval.getSymbol()) + " = " + string(yyvsp[-2].getSymbol()) + " - " + string(yyvsp[0].getSymbol()) + "\n");
-        string asmCode = "MOV AX, " + string(yyvsp[-2].getSymbol().c_str()) + "\n";
-        asmCode += "MOV BX, " + string(yyvsp[0].getSymbol().c_str()) + "\n";
-        asmCode += "SUB AX, BX\n";
-        asmCode += "MOV " + string(yyval.getSymbol().c_str()) + ", AX\n\n";
+        printIR(yyval.getSymbol() + " = " + yyvsp[-2].getSymbol() + " - " + yyvsp[0].getSymbol() + "\n");
         printASM(asmCode);
      }
-#line 1499 "parser.tab.c"
+#line 1388 "parser2.tab.c"
     break;
 
-  case 33: /* expr: expr LOGICOP expr  */
-#line 259 "parser.y"
+  case 20: /* expr: expr LOGICOP expr  */
+#line 202 "parser2.y"
                          { 
         log_error("expr : expr LOGICOP expr \n"); 
-        char* str = newTemp();
-        Symbol_Info obj(str, "TempID");
-        yyval = obj;
-        string asmCode = "MOV AX, " + string(yyvsp[-2].getSymbol().c_str()) + "\n";
-        asmCode += "MOV BX, " + string(yyvsp[0].getSymbol().c_str()) + "\n";
+        std::string asmCode = "\tMOV AX, " + yyvsp[-2].getSymbol() + "\n";
+        asmCode += "\tMOV BX, " + yyvsp[0].getSymbol() + "\n";
         if(yyvsp[-1].getSymbol() == "&&") {
-            printIR(string(yyval.getSymbol()) + " = " + string(yyvsp[-2].getSymbol()) + " && " + string(yyvsp[0].getSymbol()) + "\n");
+            printIR(yyval.getSymbol() + " = " + yyvsp[-2].getSymbol() + " && " + yyvsp[0].getSymbol() + "\n");
             asmCode += "AND AX, BX\n";
-        } else {
-            printIR(string(yyval.getSymbol()) + " = " + string(yyvsp[-2].getSymbol()) + " || " + string(yyvsp[0].getSymbol()) + "\n");
+        } else if(yyvsp[-1].getSymbol() == "||")  {
+            printIR(yyval.getSymbol() + " = " + yyvsp[-2].getSymbol() + " || " + yyvsp[0].getSymbol() + "\n");
             asmCode += "OR AX, BX\n";    
         }
-        asmCode += "MOV " + string(yyval.getSymbol().c_str()) + ", AX\n\n";
+        asmCode += "\tMOV " + yyval.getSymbol() + ", AX\n\n";
         printASM(asmCode);
-     }
-#line 1521 "parser.tab.c"
-    break;
-
-  case 34: /* expr: LPAREN expr RPAREN  */
-#line 276 "parser.y"
-                          { 
-        log_error("expr : LPAREN expr RPAREN  \n"); 
         char* str = newTemp();
         Symbol_Info obj(str, "TempID");
         yyval = obj;
-        printIR(string(yyval.getSymbol()) + " = " + string(yyvsp[-1].getSymbol()) + "\n");
-        string asmCode = "MOV AX, " + string(yyvsp[-1].getSymbol().c_str()) + "\n";
-        asmCode += "MOV " + string(yyval.getSymbol().c_str()) + ", AX\n\n";
-        printASM(asmCode);
+        
      }
-#line 1536 "parser.tab.c"
+#line 1411 "parser2.tab.c"
     break;
 
-  case 35: /* expr: term  */
-#line 286 "parser.y"
+  case 21: /* expr: LPAREN expr RPAREN  */
+#line 220 "parser2.y"
+                          { 
+        log_error("expr : LPAREN expr RPAREN  \n");
+        //TODO: UNCOMMENT IF OTHERS ARE DONE 
+        // char* str = newTemp();
+        // Symbol_Info obj(str, "TempID");
+        // $$ = obj;
+        printIR(yyval.getSymbol() + " = " + yyvsp[-1].getSymbol() + "\n");
+        std::string asmCode = "\tMOV AX, " + yyvsp[-1].getSymbol() + "\n";
+        asmCode += "\tMOV " + yyval.getSymbol() + ", AX\n\n";
+        printASM(asmCode);
+     }
+#line 1427 "parser2.tab.c"
+    break;
+
+  case 22: /* expr: term  */
+#line 231 "parser2.y"
             { 
         log_error("expr : term \n"); 
-        char* str = newTemp();
-        Symbol_Info obj(str, "TempID");
-        yyval = obj;
-        printIR(string(yyval.getSymbol()) + " = " + string(yyvsp[0].getSymbol()) + "\n");
-        string asmCode = "MOV AX, " + string(yyvsp[0].getSymbol().c_str()) + "\n";
-        printASM(asmCode);
+        // std::string asmCode = "\tMOV AX, " + $1.getSymbol() + "\n";
+        // printASM(asmCode);
+     
+        // char* str = newTemp();
+        // Symbol_Info obj(str, "TempID");
+        // $$ = obj;
+        printIR(yyval.getSymbol() + " = " + yyvsp[0].getSymbol() + "\n");
      }
-#line 1550 "parser.tab.c"
+#line 1442 "parser2.tab.c"
     break;
 
-  case 36: /* term: ID  */
-#line 297 "parser.y"
+  case 23: /* term: ID  */
+#line 243 "parser2.y"
           {
-    
     Symbol_Info obj(string(yyvsp[0].getSymbol()), "ID");
-
     if (!(st.insert(obj))) {
         fprintf(yyout, "%s is already declared\n", yyvsp[0].getSymbol().c_str());
-    }else{
+    } else {
         log_error("term: ID\n");
     }
 }
-#line 1565 "parser.tab.c"
+#line 1455 "parser2.tab.c"
     break;
 
 
-#line 1569 "parser.tab.c"
+#line 1459 "parser2.tab.c"
 
       default: break;
     }
@@ -1758,25 +1648,52 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 312 "parser.y"
+#line 253 "parser2.y"
 
 
 int main() 
 {
-  st.clear();
-  clearOutput();
-  ofstream opp("code.asm", ios::app);
-  initASM(opp, variables);
-  yyin=fopen("input.txt","r");
-  yyout=fopen("log_error.txt","w");
-  yyparse(); 
-  st.print();
+    st.clear();
+    clearOutput();
+    string asmCode = ".MODEL SMALL\n";
+    asmCode += ".STACK 100H\n";
+    asmCode += ".DATA\n";
+    printASM(asmCode, 0);
+    asmCode="";
+  
+    asmCode += ".CODE\n";
+    asmCode += "MAIN PROC\n";
+    asmCode += "\tMOV AX, @DATA\n";
+    asmCode += "\tMOV DS, AX\n";
+    printASM(asmCode, 2);
+    yyin = fopen("input.txt", "r");
+    yyout = fopen("log_error.txt", "w");
+    yyparse(); 
 
-  string asmCode = "MOV AH, 4CH\n";
-  asmCode += "INT 21H\n";
-  asmCode += "MAIN ENDP\n";
-  asmCode += "END MAIN\n";
-  printASM(asmCode);
+    st.print();
 
-  return 0;
+    asmCode = "\tMOV AH, 4CH\n";
+    asmCode += "\tINT 21H\n";
+    asmCode += "MAIN ENDP\n";
+    asmCode += "END MAIN\n";
+    printASM(asmCode, 3);
+
+    for(auto &i: variables){
+        printVar(i);
+    }
+
+    for(int i = 0; i < 4; ++i) {
+        for(auto it: asm_code[i]) {
+            std::ofstream op2;
+            op2.open("code.asm", std::ios::app);
+            if (!op2.is_open()) {
+                std::cerr << "Error opening file.\n";
+            }
+            op2 << it;
+            op2.close();
+        }
+    }
+
+
+    return 0;
 }

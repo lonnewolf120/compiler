@@ -23,68 +23,36 @@ public:
     void setSymbol(string t) { this->symbol = t; }
     void setToken(string t) { this->token = t; }
 
-    Symbol_Info operator+( Symbol_Info& other)  {
-        double thisSymbolValue = 0.0;
-        double otherSymbolValue = 0.0;
-        try {
-            thisSymbolValue = std::stod(this->getSymbol());
-            otherSymbolValue = std::stod(other.getSymbol());
-        } catch (const std::invalid_argument& e) {
-            // Handle the error appropriately
-            // For now, we will just print an error message and return a default Symbol_Info
-            std::cerr << "Invalid argument: " << e.what() << std::endl;
-            return Symbol_Info("0", "TempID");
-        }
-        double result = thisSymbolValue + otherSymbolValue;
-        return Symbol_Info(std::to_string(result), "TempID");
+    Symbol_Info operator+(Symbol_Info& other) {
+        // double thisSymbolValue = std::stod(string(this->getSymbol()));
+        // double otherSymbolValue = std::stod(string(other.getSymbol()));
+        // double result = thisSymbolValue + otherSymbolValue;
+        // return Symbol_Info(std::to_string(result), "TempID");
+        return Symbol_Info("", "TempID");
     }
 
-    Symbol_Info operator-( Symbol_Info& other)  {
-        double thisSymbolValue = 0.0;
-        double otherSymbolValue = 0.0;
-        try {
-            thisSymbolValue = std::stod(this->getSymbol());
-            otherSymbolValue = std::stod(other.getSymbol());
-        } catch (const std::invalid_argument& e) {
-            // Handle the error appropriately
-            // For now, we will just print an error message and return a default Symbol_Info
-            std::cerr << "Invalid argument: " << e.what() << std::endl;
-            return Symbol_Info("0", "TempID");
-        }
-        double result = thisSymbolValue - otherSymbolValue;
-        return Symbol_Info(std::to_string(result), "TempID");
+    Symbol_Info operator-(Symbol_Info& other) {
+        // double thisSymbolValue = std::stod(string(this->getSymbol()));
+        // double otherSymbolValue = std::stod(string(other.getSymbol()));
+        // double result = thisSymbolValue - otherSymbolValue;
+        // return Symbol_Info(std::to_string(result), "TempID");
+        return Symbol_Info("", "TempID");
     }
 
-    Symbol_Info operator*( Symbol_Info& other)  {
-        double thisSymbolValue = 0.0;
-        double otherSymbolValue = 0.0;
-        try {
-            thisSymbolValue = std::stod(this->getSymbol());
-            otherSymbolValue = std::stod(other.getSymbol());
-        } catch (const std::invalid_argument& e) {
-            // Handle the error appropriately
-            // For now, we will just print an error message and return a default Symbol_Info
-            std::cerr << "Invalid argument: " << e.what() << std::endl;
-            return Symbol_Info("0", "TempID");
-        }
-        double result = thisSymbolValue * otherSymbolValue;
-        return Symbol_Info(std::to_string(result), "TempID");
+    Symbol_Info operator*(Symbol_Info& other) {
+        // double thisSymbolValue = std::stod(string(this->getSymbol()));
+        // double otherSymbolValue = std::stod(string(other.getSymbol()));
+        // double result = thisSymbolValue * otherSymbolValue;
+        // return Symbol_Info(std::to_string(result), "TempID");
+        return Symbol_Info("", "TempID");
     }
 
-    Symbol_Info operator/( Symbol_Info& other)  {
-        double thisSymbolValue = 0.0;
-        double otherSymbolValue = 0.0;
-        try {
-            thisSymbolValue = std::stod(this->getSymbol());
-            otherSymbolValue = std::stod(other.getSymbol());
-        } catch (const std::invalid_argument& e) {
-            // Handle the error appropriately
-            // For now, we will just print an error message and return a default Symbol_Info
-            std::cerr << "Invalid argument: " << e.what() << std::endl;
-            return Symbol_Info("0", "TempID");
-        }
-        double result = thisSymbolValue / otherSymbolValue;
-        return Symbol_Info(std::to_string(result), "TempID");
+    Symbol_Info operator/(Symbol_Info& other) {
+        // double thisSymbolValue = std::stod(string(this->getSymbol()));
+        // double otherSymbolValue = std::stod(string(other.getSymbol()));
+        // double result = thisSymbolValue / otherSymbolValue;
+        // return Symbol_Info(std::to_string(result), "TempID");
+        return Symbol_Info("", "TempID");
     }
 };
 
@@ -93,8 +61,11 @@ private:
     unordered_map<int, vector<Symbol_Info*>> snf;  // Change to unordered_map
 
 public:
-    SymbolTable() {}
-
+    SymbolTable() {
+        snf.clear();
+        snf = unordered_map<int, vector<Symbol_Info*>>();
+    }
+    
     int hash(string symbol, string token) {
     int s = 0;
     int p_pow = 1;
@@ -107,7 +78,7 @@ public:
         p_pow = (p_pow * roll) % table_size;
     }
     return s % table_size;
-}
+    }
 
     void print() {  
         ofstream output("table.txt");

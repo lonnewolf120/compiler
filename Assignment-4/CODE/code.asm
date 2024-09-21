@@ -1,168 +1,82 @@
-MOV AX, a
-MOV BX, b
-MUL AX, BX
-MOV t1, AX
+.MODEL SMALL
+.STACK 100H
+.DATA
+a DW ?
+c DW ?
+d DW ?
+t1 DW ?
+t2 DW ?
+t3 DW ?
+t4 DW ?
+t5 DW ?
+t6 DW ?
+t7 DW ?
+.CODE
+MAIN PROC
+	MOV AX, @DATA
+	MOV DS, AX
+	MOV AX, 2
+	MOV a, AX
 
-MOV AX, b
-MOV BX, b
-MUL AX, BX
-MOV t1, AX
+	MOV AX, 1
+	MOV c, AX
 
-MOV AX, m
-MOV BX, n
-MUL AX, BX
-MOV t1, AX
+	XOR DX, DX ;need to clear DX first
+	MOV AX, c
+	MOV BX, 2
+	MUL BX
+	MOV c, AX
 
-MOV AX, n
-MOV BX, 10
-MUL AX, BX
-MOV t2, AX
+	MOV AX, a
+	MOV BX, t1
+	ADD AX, BX
+	MOV a, AX
 
-MOV AX, a
-MOV BX, b
-MUL AX, BX
-MOV t1, AX
+	MOV AX, t2
+	MOV BX, 1
+	SUB AX, BX
+	MOV t2, AX
 
-MOV AX, b
-MOV BX, b
-MUL AX, BX
-MOV t2, AX
+	MOV AX, t3
+	MOV d, AX
 
-MOV AX, m
-MOV BX, n
-MUL AX, BX
-MOV t3, AX
+	MOV AX, a
+	MOV BX, c
+	SUB AX, BX
+	MOV a, AX
 
-MOV AX, n
-MOV BX, 10
-MUL AX, BX
-MOV t4, AX
+	MOV AX, 2
+	MOV BX, 3
+	SUB AX, BX
+	MOV 2, AX
 
-MOV AX, b
-MOV BX, c
-ADD AX, BX
-MOV t1, AX
+	MOV AX, t5
+	MOV c, AX
 
-MOV AX, a
-MOV BX, b
-ADD AX, BX
-MOV t2, AX
+	XOR DX, DX ;need to clear DX first
+	MOV AX, c
+	MOV BX, 1
+	MUL BX
+	MOV c, AX
 
-MOV AX, a
-MOV BX, b
-MUL AX, BX
-MOV t3, AX
+	MOV AX, t4
+	MOV BX, t6
+	SUB AX, BX
+	MOV t4, AX
 
-MOV AX, b
-MOV BX, b
-MUL AX, BX
-MOV t4, AX
+	MOV AX, t7
+	MOV d, AX
 
-MOV AX, a
-MOV BX, t4
-ADD AX, BX
-MOV t5, AX
-
-MOV AX, a
-MOV BX, b
-OR AX, BX
-MOV t6, AX
-
-MOV AX, m
-MOV BX, n
-MUL AX, BX
-MOV t7, AX
-
-MOV AX, 2
-MOV BX, i
-DIV AX, BX
-MOV t8, AX
-
-MOV AX, n
-MOV BX, 10
-MUL AX, BX
-MOV t9, AX
-
-MOV AX, t7
-MOV BX, n
-ADD AX, BX
-MOV t10, AX
-
-MOV AX, b
-MOV BX, 3
-DIV AX, BX
-MOV t11, AX
-
-MOV AX, a
-MOV BX, t11
-ADD AX, BX
-MOV t12, AX
-
-MOV AX, 2
-MOV BX, 66
-ADD AX, BX
-MOV t13, AX
-
-MOV AX, t13
-MOV BX, 9.6
-ADD AX, BX
-MOV t14, AX
-
-MOV AX, 3.4
-MOV BX, 6.5
-ADD AX, BX
-MOV t15, AX
-
-MOV AX, new
-MOV BX, old
-ADD AX, BX
-MOV t16, AX
-
-MOV AX, b
-MOV BX, c
-ADD AX, BX
-MOV t1, AX
-
-MOV AX, b
-MOV BX, c
-ADD AX, BX
-MOV t1, AX
-
-MOV AX, b
-MOV BX, c
-ADD AX, BX
-MOV t1, AX
-
-MOV AX, b
-MOV BX, c
-ADD AX, BX
-MOV t1, AX
-
-MOV AX, b
-MOV AX, c
-MOV AX, b
-MOV AX, c
-MOV AX, b
-MOV AX, c
-MOV AX, b
-MOV AX, c
-MOV AX, b
-MOV AX, c
-MOV AX, b
-MOV AX, c
-MOV AX, t1
-MOV BX, t2
-ADD AX, BX
-MOV 0, AX
-
-MOV AX, 0
-MOV a, AX
-
-fun PROC
-	PUSH BP
-	MOV BP, SP
-	; Function body goes here
-	a
-	POP BP
-	RET
-fun ENDP
+	MOV AH, 02H
+	MOV DX, a
+	INT 21H
+	MOV AH, 02H
+	MOV DX, c
+	INT 21H
+	MOV AH, 02H
+	MOV DX, d
+	INT 21H
+	MOV AH, 4CH
+	INT 21H
+MAIN ENDP
+END MAIN

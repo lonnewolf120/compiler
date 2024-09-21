@@ -1,6 +1,6 @@
 flex lexer.l
-bison -d parser.y
-g++ parser.tab.c lex.yy.c 
+bison -d parser2.y -Wother
+g++ parser2.tab.c lex.yy.c 
 ./a.out
 
 echo -e "\e[32mCOMPILED SUCCESSFULLY!\e[0m"

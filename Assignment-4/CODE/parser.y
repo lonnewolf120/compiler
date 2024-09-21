@@ -12,6 +12,7 @@ string variables="";
 
 int yylex();
 
+
 SymbolTable st;
 
 int temp_counter=1;
@@ -21,17 +22,6 @@ char* newTemp(){
     sprintf(temp, "t%d", temp_counter);
     temp_counter++;
     return temp;
-}
-
-
-void fcout(string token, string symbol="") {
-    ofstream op2;
-    op2.open("token.txt", ios::app);
-    if (!op2.is_open()) {
-        cerr << "Error opening file.\n";
-    }
-    (symbol=="")?op2<<"<"<<token<<">": op2<<"<"<<token<<", "<<symbol<<">";
-    op2.close();
 }
 
 void log_error(const char *msg=""){
@@ -109,11 +99,11 @@ line: mul_stmt
 
 stmt : stmt unit { log_error("stmt : stmt unit\n");}
      | unit {log_error("stmt : unit\n"); }
+     | error {log_error(""); yyerror("syntax error: invalid expression");}
      ;
 
 unit : var_decl  { log_error("unit : var_decl\n"); }
      | expr_decl  { log_error("unit : expr_decl\n"); }
-     | error {yyerrok;log_error(""); yyerror("syntax error: invalid expression");}
      ;
 
 func_decl : type_spec term LPAREN RPAREN LCURL stmt RCURL {
@@ -133,18 +123,6 @@ func_decl : type_spec term LPAREN RPAREN LCURL stmt RCURL {
     }
     | type_spec term LPAREN param_list RPAREN LCURL stmt RCURL {
     log_error("func_decl : type_spec term LPAREN param_list RPAREN LCURL stmt RCURL\n"); 
-    
-    // string funcName = string($2.getSymbol());
-    // string asmCode = funcName + " PROC\n";
-    // asmCode += "\tPUSH BP\n";
-    // asmCode += "\tMOV BP, SP\n";
-    // asmCode += "\t; Function body goes here\n";
-    // asmCode += "\t"+ string($6.getSymbol()) +"\n";
-    // asmCode += "\t"+ string($6.getSymbol()) +"\n";
-    // asmCode += "\tPOP BP\n";
-    // asmCode += "\tRET\n";
-    // asmCode += funcName + " ENDP\n";
-    // printASM(asmCode);
     
     }
     ;
@@ -186,19 +164,19 @@ type_spec : INT {
           ;
 
 decl_list : decl_list COMMA term {log_error("dec_list : dec_list COMMA term\n");}
-| decl_list COMMA term LTHIRD CONST_INT RTHIRD {log_error("dec_list : dec_list COMMA term LTHIRD CONST_INT RTHIRD\n"); }
-| term {log_error("dec_list : term\n");
-// $$ = $1;
-printIR(string($$.getSymbol()) + " = " + string($1.getSymbol()) + ";\n");
-string asmCode = "MOV AX, " + string($1.getSymbol().c_str()) + "\n";
-asmCode += "MOV " + string($$.getSymbol().c_str()) + ", AX\n\n";
-printASM(asmCode);
+        | decl_list COMMA term LTHIRD CONST_INT RTHIRD {log_error("dec_list : dec_list COMMA term LTHIRD CONST_INT RTHIRD\n"); }
+        | term {log_error("dec_list : term\n");
+        // $$ = $1;
+        printIR(string($$.getSymbol()) + " = " + string($1.getSymbol()) + ";\n");
+        string asmCode = "MOV AX, " + string($1.getSymbol().c_str()) + "\n";
+        asmCode += "MOV " + string($$.getSymbol().c_str()) + ", AX\n\n";
+        printASM(asmCode);
 
-}
-| term LTHIRD CONST_INT RTHIRD { log_error("dec_list : term LTHIRD CONST_INT RTHIRD\n"); }
-| ass_list {log_error("dec_list : asslist\n");}
-;
-
+        }
+        | term LTHIRD CONST_INT RTHIRD { log_error("dec_list : term LTHIRD CONST_INT RTHIRD\n"); }
+        | ass_list {log_error("dec_list : asslist\n");}
+        ;
+ 
 
 expr_decl : term ASSIGNOP expr SEMICOLON  {
     log_error("expr_decl : term ASSIGNOP expr SEMICOLON\n");
@@ -229,7 +207,8 @@ expr : CONST_INT   { log_error("expr : CONST_INT \n"); }
         log_error("expr : expr MULOP expr \n");
         char* str = newTemp();
         Symbol_Info obj(str, "TempID");
-        $$ = $1 * $3;  
+        // $$ = $1 * $3;
+        $$=obj;  
         printIR(string($$.getSymbol()) + " = " + string($1.getSymbol()) + " * " + string($3.getSymbol()) + "\n");
         string asmCode = "MOV AX, " + string($1.getSymbol().c_str()) + "\n"; 
         asmCode += "MOV BX, " + string($3.getSymbol().c_str()) + "\n";
@@ -241,7 +220,9 @@ expr : CONST_INT   { log_error("expr : CONST_INT \n"); }
         log_error("expr : expr DIVOP expr \n"); 
         char* str = newTemp();
         Symbol_Info obj(str, "TempID");
-        $$ = $1 / $3;  
+
+        // $$ = $1 / $3;  
+        $$=obj;
         printIR(string($$.getSymbol()) + " = " + string($1.getSymbol()) + " / " + string($3.getSymbol()) + "\n");
         string asmCode = "MOV AX, " + string($1.getSymbol().c_str()) + "\n";
         asmCode += "MOV BX, " + string($3.getSymbol().c_str()) + "\n";
@@ -253,7 +234,8 @@ expr : CONST_INT   { log_error("expr : CONST_INT \n"); }
         log_error("expr : expr ADDOP expr \n"); 
         char* str = newTemp();
         Symbol_Info obj(str, "TempID");
-        $$ = $1 + $3;  
+        // $$ = $1 + $3;
+        $$ = obj;  
         printIR(string($$.getSymbol()) + " = " + string($1.getSymbol()) + " + " + string($3.getSymbol()) + "\n");
         string asmCode = "MOV AX, " + string($1.getSymbol().c_str()) + "\n";
         asmCode += "MOV BX, " + string($3.getSymbol().c_str()) + "\n";
@@ -265,7 +247,8 @@ expr : CONST_INT   { log_error("expr : CONST_INT \n"); }
         log_error("expr : expr SUBOP expr \n"); 
         char* str = newTemp();
         Symbol_Info obj(str, "TempID");
-        $$ = $1 - $3; 
+        // $$ = $1 - $3; 
+        $$ = obj;
         printIR(string($$.getSymbol()) + " = " + string($1.getSymbol()) + " - " + string($3.getSymbol()) + "\n");
         string asmCode = "MOV AX, " + string($1.getSymbol().c_str()) + "\n";
         asmCode += "MOV BX, " + string($3.getSymbol().c_str()) + "\n";

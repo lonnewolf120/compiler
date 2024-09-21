@@ -43,9 +43,9 @@ expr: expr '+' expr		{
 	char* str = newTemp();
 	SymbolInfo obj(str, "TempID");
 	$$ = obj;
-	cout<<$$.getSymbol()<<" = " << $1.getSymbol() << "+" << $3.getSymbol()<<endl;
-
+	cout<< $$.getSymbol()<<" = " << $1.getSymbol() << "+" << $3.getSymbol()<<endl;
 	// ASM Code
+	// a : 1 + 2
 	fprintf(yyout, "MOV AX, %s\n", $1.getSymbol().c_str());
 	fprintf(yyout, "MOV BX, %s\n", $3.getSymbol().c_str());
 	fprintf(yyout, "ADD AX, BX\n");
