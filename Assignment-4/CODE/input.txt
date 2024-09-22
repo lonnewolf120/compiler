@@ -1,4 +1,10 @@
-main(){
+int x;
+float fun(int x){
+    x = x + 5;
+}
+
+
+main (){
 
 int a;
 int c;
@@ -6,6 +12,18 @@ int d;
 
 a = 2;
 c = 1;
+
+switch(a){
+    case 1:
+       c=12;
+       break;
+    case 2:  
+       a=14;
+       break;
+    default:
+       a=1;
+}
+
 
 d = a+c*2-1;
 d = a-c-(2-3)*1;

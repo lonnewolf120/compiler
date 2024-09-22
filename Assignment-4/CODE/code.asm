@@ -1,26 +1,70 @@
 .MODEL SMALL
 .STACK 100H
 .DATA
+t1 DW ?
 a DW ?
 c DW ?
 d DW ?
-t1 DW ?
 t2 DW ?
 t3 DW ?
 t4 DW ?
 t5 DW ?
 t6 DW ?
 t7 DW ?
+t8 DW ?
 .CODE
 MAIN PROC
 	MOV AX, @DATA
 	MOV DS, AX
+	XOR AX, AX ;making AX=0
+	MOV AX, x
+	MOV BX, 5
+	ADD AX, BX
+	MOV x, AX
+
+	MOV AX, t1
+	MOV x, AX
+
+fun PROC
+	MOV AX, t1
+	MOV x, AX
+
+fun ENDP
 	MOV AX, 2
 	MOV a, AX
 
 	MOV AX, 1
 	MOV c, AX
 
+	MOV AX, 12
+	MOV c, AX
+
+	JMP END_SWITCH
+	CMP BX, 1
+	JE CASE_1
+CASE_1:
+	MOV AX, 12
+	MOV c, AX
+
+	MOV AX, 14
+	MOV a, AX
+
+	JMP END_SWITCH
+	CMP BX, 2
+	JE CASE_2
+CASE_2:
+	MOV AX, 14
+	MOV a, AX
+
+	MOV AX, 1
+	MOV a, AX
+
+DEFAULT:
+	MOV AX, 1
+	MOV a, AX
+
+	MOV AX, a
+	MOV BX, AX
 	XOR DX, DX ;need to clear DX first
 	MOV AX, c
 	MOV BX, 2
@@ -28,16 +72,16 @@ MAIN PROC
 	MOV c, AX
 
 	MOV AX, a
-	MOV BX, t1
+	MOV BX, t2
 	ADD AX, BX
 	MOV a, AX
 
-	MOV AX, t2
+	MOV AX, t3
 	MOV BX, 1
 	SUB AX, BX
-	MOV t2, AX
+	MOV t3, AX
 
-	MOV AX, t3
+	MOV AX, t4
 	MOV d, AX
 
 	MOV AX, a
@@ -50,7 +94,7 @@ MAIN PROC
 	SUB AX, BX
 	MOV 2, AX
 
-	MOV AX, t5
+	MOV AX, t6
 	MOV c, AX
 
 	XOR DX, DX ;need to clear DX first
@@ -59,12 +103,12 @@ MAIN PROC
 	MUL BX
 	MOV c, AX
 
-	MOV AX, t4
-	MOV BX, t6
+	MOV AX, t5
+	MOV BX, t7
 	SUB AX, BX
-	MOV t4, AX
+	MOV t5, AX
 
-	MOV AX, t7
+	MOV AX, t8
 	MOV d, AX
 
 	MOV AH, 02H

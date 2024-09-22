@@ -1,5 +1,5 @@
 flex lexer.l
-bison -d parser2.y -Wother
+bison -d parser2.y -Wother -Wcounterexamples
 g++ parser2.tab.c lex.yy.c 
 ./a.out
 

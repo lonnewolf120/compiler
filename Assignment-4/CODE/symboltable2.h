@@ -13,6 +13,7 @@ public:
     Symbol_Info() {
         this->symbol = "";
         this->token = "";
+        this->code = "";
     }
     Symbol_Info(string n, string t) {
         this->symbol = n;
@@ -20,8 +21,10 @@ public:
     }
     string getSymbol() { return symbol; }
     string getToken() { return token; }
+    string getCode() { return code; }
     void setSymbol(string t) { this->symbol = t; }
     void setToken(string t) { this->token = t; }
+    void setCode(string t) { this->code = t; }
 
     Symbol_Info operator+(Symbol_Info& other) {
         // double thisSymbolValue = std::stod(string(this->getSymbol()));
@@ -65,7 +68,7 @@ public:
         snf.clear();
         snf = unordered_map<int, vector<Symbol_Info*>>();
     }
-    
+        
     int hash(string symbol, string token) {
     int s = 0;
     int p_pow = 1;

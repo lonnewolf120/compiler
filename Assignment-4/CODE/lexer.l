@@ -4,7 +4,7 @@
 
 #include "symboltable2.h"
 #define YYSTYPE Symbol_Info
-#include "parser.tab.h"
+#include "parser2.tab.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -37,16 +37,23 @@ delim      [ \t]
 "float"    { return FLOAT; }
 "double"   { return DOUBLE; }
 "char"     { return CHAR; }
+"gint"      { return INT; }
+"gfloat2"    { return FLOAT; }
+"gdouble2"   { return DOUBLE; }
 
 "main"     { return MAIN; }
 "if"       { return IF; }
 "else"     { return ELSE; }
+"elif"     { return ELIF; }
 "while"    { return WHILE; }
 "for"      { return FOR; }
 "return"   { return RETURN; }
 "break"    { return BREAK; }
 "continue" { return CONTINUE; }
 "void"     { return VOID; }
+"switch"  { return SWITCH; }
+"case"    { return CASE; }
+"default"  { return DEFAULT; }
 
 "{"         {return LCURL;}
 "}"         {return RCURL;}
@@ -55,6 +62,7 @@ delim      [ \t]
 "["         {return LTHIRD;}
 "]"         {return RTHIRD;}
 ","         {return COMMA;}
+":"         {return COLON;}
 ";"         {return SEMICOLON;}
 "++"        { return INCOP; }
 "--"        { return DECOP; }

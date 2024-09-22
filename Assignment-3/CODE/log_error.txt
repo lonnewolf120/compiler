@@ -17,7 +17,7 @@ expr : expr ADDOP expr
 Line Number: 3
 expr_decl : term ASSIGNOP expr SEMICOLON
 Line Number: 3
-unit : expr_decl
+unit : expr_decl NEWLINE
 Line Number: 3
 stmt : unit
 Line Number: 4
@@ -38,7 +38,7 @@ dec_list : asslist
 Line Number: 6
 vardecl : type_spec dec_list SEMICOLON
 Line Number: 6
-unit : var_decl
+unit : var_decl NEWLINE
 Line Number: 6
 stmt : unit
 Line Number: 7
@@ -54,7 +54,7 @@ dec_list : dec_list COMMA term
 Line Number: 7
 vardecl : type_spec dec_list SEMICOLON
 Line Number: 7
-unit : var_decl
+unit : var_decl NEWLINE
 Line Number: 7
 stmt : stmt unit
 Line Number: 8
@@ -66,7 +66,7 @@ dec_list : term
 Line Number: 8
 vardecl : type_spec dec_list SEMICOLON
 Line Number: 8
-unit : var_decl
+unit : var_decl NEWLINE
 Line Number: 8
 stmt : stmt unit
 Line Number: 9
@@ -77,7 +77,7 @@ dec_list : term LTHIRD CONST_INT RTHIRD
 Line Number: 9
 vardecl : type_spec dec_list SEMICOLON
 Line Number: 9
-unit : var_decl
+unit : var_decl NEWLINE
 Line Number: 9
 stmt : stmt unit
 a is already declared
@@ -99,7 +99,7 @@ expr : expr MULOP expr
 Line Number: 10
 expr_decl : term ASSIGNOP expr SEMICOLON
 Line Number: 10
-unit : expr_decl
+unit : expr_decl NEWLINE
 Line Number: 10
 stmt : stmt unit
 a is already declared
@@ -119,7 +119,7 @@ expr : expr ADDOP expr
 Line Number: 11
 expr_decl : term ASSIGNOP expr SEMICOLON
 Line Number: 11
-unit : expr_decl
+unit : expr_decl NEWLINE
 Line Number: 11
 stmt : stmt unit
 a is already declared
@@ -134,7 +134,7 @@ expr : expr LOGICOP expr
 Line Number: 12
 expr_decl : term ASSIGNOP expr SEMICOLON
 Line Number: 12
-unit : expr_decl
+unit : expr_decl NEWLINE
 Line Number: 12
 stmt : stmt unit
 Line Number: 13
@@ -149,7 +149,7 @@ dec_list : dec_list COMMA term LTHIRD CONST_INT RTHIRD
 Line Number: 13
 vardecl : type_spec dec_list SEMICOLON
 Line Number: 13
-unit : var_decl
+unit : var_decl NEWLINE
 Line Number: 13
 stmt : stmt unit
 a is already declared
@@ -158,7 +158,7 @@ expr : CONST_INT
 Line Number: 14
 expr_decl : term ASSIGNOP expr SEMICOLON
 Line Number: 14
-unit : expr_decl
+unit : expr_decl NEWLINE
 Line Number: 14
 stmt : stmt unit
 Line Number: 15
@@ -211,7 +211,7 @@ expr : expr ADDOP expr
 Line Number: 16
 expr_decl : term ASSIGNOP expr SEMICOLON
 Line Number: 16
-unit : expr_decl
+unit : expr_decl NEWLINE
 Line Number: 16
 stmt : stmt unit
 d is already declared
@@ -228,7 +228,7 @@ expr : expr SUBOP expr
 Line Number: 17
 expr_decl : term ASSIGNOP expr SEMICOLON
 Line Number: 17
-unit : expr_decl
+unit : expr_decl NEWLINE
 Line Number: 17
 stmt : stmt unit
 Line Number: 18
@@ -242,7 +242,7 @@ expr : expr ADDOP expr
 Line Number: 18
 expr_decl : term ASSIGNOP expr SEMICOLON
 Line Number: 18
-unit : expr_decl
+unit : expr_decl NEWLINE
 Line Number: 18
 stmt : stmt unit
 Line Number: 19
@@ -253,7 +253,7 @@ dec_list : term
 Line Number: 19
 vardecl : type_spec dec_list SEMICOLON
 Line Number: 19
-unit : var_decl
+unit : var_decl NEWLINE
 Line Number: 19
 stmt : stmt unit
 Line Number: 20
@@ -278,7 +278,7 @@ dec_list : term LTHIRD CONST_INT RTHIRD
 Line Number: 21
 vardecl : type_spec dec_list SEMICOLON
 Line Number: 21
-unit : var_decl
+unit : var_decl NEWLINE
 Line Number: 21
 stmt : stmt unit
 Line Number: 23
@@ -315,7 +315,7 @@ expr : expr ADDOP expr
 Line Number: 26
 expr_decl : term ASSIGNOP expr SEMICOLON
 Line Number: 26
-unit : expr_decl
+unit : expr_decl NEWLINE
 Line Number: 26
 stmt : unit
 Line Number: 27

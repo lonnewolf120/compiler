@@ -62,32 +62,31 @@ extern int yydebug;
     RCURL = 263,                   /* RCURL  */
     COMMA = 264,                   /* COMMA  */
     ID = 265,                      /* ID  */
-    ADDOP = 266,                   /* ADDOP  */
-    SUBOP = 267,                   /* SUBOP  */
-    MULOP = 268,                   /* MULOP  */
-    DIVOP = 269,                   /* DIVOP  */
-    MODOP = 270,                   /* MODOP  */
-    ASSIGNOP = 271,                /* ASSIGNOP  */
-    SEMICOLON = 272,               /* SEMICOLON  */
-    RELOP = 273,                   /* RELOP  */
-    INCOP = 274,                   /* INCOP  */
-    DECOP = 275,                   /* DECOP  */
-    LOGICOP = 276,                 /* LOGICOP  */
-    NOT = 277,                     /* NOT  */
-    CONST_INT = 278,               /* CONST_INT  */
-    CONST_FLOAT = 279,             /* CONST_FLOAT  */
-    INT = 280,                     /* INT  */
-    FLOAT = 281,                   /* FLOAT  */
-    DOUBLE = 282,                  /* DOUBLE  */
-    CHAR = 283,                    /* CHAR  */
-    IF = 284,                      /* IF  */
-    ELSE = 285,                    /* ELSE  */
-    FOR = 286,                     /* FOR  */
-    WHILE = 287,                   /* WHILE  */
-    RETURN = 288,                  /* RETURN  */
-    BREAK = 289,                   /* BREAK  */
-    CONTINUE = 290,                /* CONTINUE  */
-    VOID = 291                     /* VOID  */
+    ASSIGNOP = 266,                /* ASSIGNOP  */
+    SEMICOLON = 267,               /* SEMICOLON  */
+    RELOP = 268,                   /* RELOP  */
+    INCOP = 269,                   /* INCOP  */
+    DECOP = 270,                   /* DECOP  */
+    LOGICOP = 271,                 /* LOGICOP  */
+    NOT = 272,                     /* NOT  */
+    CONST_INT = 273,               /* CONST_INT  */
+    CONST_FLOAT = 274,             /* CONST_FLOAT  */
+    INT = 275,                     /* INT  */
+    FLOAT = 276,                   /* FLOAT  */
+    DOUBLE = 277,                  /* DOUBLE  */
+    CHAR = 278,                    /* CHAR  */
+    IF = 279,                      /* IF  */
+    ELSE = 280,                    /* ELSE  */
+    FOR = 281,                     /* FOR  */
+    WHILE = 282,                   /* WHILE  */
+    RETURN = 283,                  /* RETURN  */
+    BREAK = 284,                   /* BREAK  */
+    CONTINUE = 285,                /* CONTINUE  */
+    VOID = 286,                    /* VOID  */
+    ADDOP = 287,                   /* ADDOP  */
+    SUBOP = 288,                   /* SUBOP  */
+    MULOP = 289,                   /* MULOP  */
+    DIVOP = 290                    /* DIVOP  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -102,7 +101,7 @@ int ivar;
 double dvar;
 char *cvar;
 
-#line 106 "parser.tab.h"
+#line 105 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

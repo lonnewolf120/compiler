@@ -37,7 +37,7 @@ char* newTemp() {
     char* temp;
     temp = (char*) malloc(15 * sizeof(char));
     sprintf(temp, "t%d", temp_counter);
-    printASM(("t"+to_string(temp_counter)+" DW ?\n"), 1);
+    printASM(("t"+std::to_string(temp_counter)+" DW ?\n"), 1);
     temp_counter++;
     return temp;
 }
@@ -52,8 +52,8 @@ void printIR(std::string str) {
     op2.close();
 }
 
-void printVar(string varName){
-    string asmCode = "\tMOV AH, 02H\n";
+void printVar(std::string varName){
+    std::string asmCode = "\tMOV AH, 02H\n";
     asmCode += "\tMOV DX, " + varName + "\n";
     asmCode += "\tINT 21H\n";
     printASM(asmCode, 2);
@@ -85,62 +85,158 @@ void clearOutput() {
 
 %}
 
-%token LTHIRD RTHIRD LPAREN RPAREN LCURL RCURL COMMA ID ADDOP SUBOP MULOP DIVOP MODOP ASSIGNOP SEMICOLON RELOP INCOP DECOP LOGICOP NOT CONST_INT CONST_FLOAT INT FLOAT DOUBLE CHAR
-%token IF ELSE FOR WHILE RETURN BREAK CONTINUE VOID MAIN
+%token LTHIRD RTHIRD LPAREN RPAREN LCURL RCURL COMMA ID ADDOP SUBOP MULOP CONST_FLOAT INT 
+%token DIVOP MODOP ASSIGNOP SEMICOLON RELOP INCOP DECOP COLON LOGICOP NOT CONST_INT FLOAT 
+%token IF ELSE FOR WHILE RETURN BREAK CONTINUE VOID MAIN SWITCH CASE ELIF DOUBLE CHAR DEFAULT
 
 %left LOGICOP
 %left ADDOP SUBOP
 %left MULOP DIVOP
-
 %right ASSIGNOP 
 
 %%
+prog:  func_decl_list main_func { log_error("prog : func_decl_list main_func\n"); }
+       ;
 
-prog: MAIN LPAREN RPAREN LCURL stmt RCURL { 
-    log_error("prog : MAIN LPAREN RPAREN LCURL stmt RCURL\n"); 
-    }
-    ;
+func_decl_list: func_decl_list func_decl { log_error("func_decl_list : func_decl_list func_decl\n"); }
+              | /* empty */ { }
+              ;
 
-stmt : stmt unit { log_error("stmt : stmt unit\n");}
-     | unit {log_error("stmt : unit\n"); }
-     | error {log_error(""); yyerror("syntax error: invalid expression");}
+main_func: MAIN LPAREN RPAREN LCURL stmt_list RCURL { 
+    log_error("main_func : MAIN LPAREN RPAREN LCURL stmt_list RCURL\n"); 
+}
+;
+
+stmt_list : stmt_list stmt { log_error("stmt_list : stmt_list stmt\n"); }
+          | stmt { log_error("stmt_list : stmt\n"); }
+          ;
+
+stmt : var_decl { log_error("stmt : var_decl\n"); }
+     | expr_decl { log_error("stmt : expr_decl\n"); }
+     | conditional { log_error("stmt : conditional\n"); }
+     | switch_stmt { log_error("stmt : switch_stmt\n"); }
+     | break_stmt { log_error("stmt : break_stmt\n"); }
+     | func_call { log_error("stmt : func_call\n"); }
+     | error { log_error(""); yyerror("syntax error: invalid expression"); }
      ;
 
-unit : var_decl  { log_error("unit : var_decl\n"); }
-     | expr_decl  { log_error("unit : expr_decl\n"); }
-     ;
+switch_stmt : SWITCH LPAREN expr RPAREN LCURL case_list default_case_opt RCURL {
+    log_error("switch_stmt : SWITCH LPAREN expr RPAREN LCURL case_list default_case_opt RCURL\n");
+    std::string asmCode = "\tMOV AX, " + $3.getSymbol() + "\n";
+    asmCode += "\tMOV BX, AX\n";
+    printASM(asmCode);
+}
+;
+
+case_list : case_list case {
+    log_error("case_list : case_list case\n");
+}
+| case {
+    log_error("case_list : case\n");
+}
+;
+
+case : CASE CONST_INT COLON stmt_list {
+    log_error("case : CASE CONST_INT COLON stmt_list\n");
+    std::string asmCode = "\tCMP BX, " + string($2.getSymbol()) + "\n";
+    asmCode += "\tJE CASE_" + string($2.getSymbol()) + "\n";
+    asmCode += "CASE_" + string($2.getSymbol()) + ":\n";
+    asmCode += $4.getCode();
+    printASM(asmCode);
+}
+;
+
+default_case_opt : default_case {
+    log_error("default_case_opt : default_case\n");
+}
+| /* empty */ {
+    log_error("default_case_opt : /* empty */\n");
+}
+;
+
+default_case : DEFAULT COLON stmt_list {
+    log_error("default_case : DEFAULT COLON stmt_list\n");
+    std::string asmCode = "DEFAULT:\n";
+    asmCode += $3.getCode();
+    printASM(asmCode);
+}
+;
+
+break_stmt : BREAK SEMICOLON {
+    log_error("break_stmt : BREAK SEMICOLON\n");
+    std::string asmCode = "\tJMP END_SWITCH\n";
+    printASM(asmCode);
+}
+;
 
 var_decl : type_spec decl_list SEMICOLON {
-    log_error("vardecl : type_spec dec_list SEMICOLON\n"); 
-    string var = $2.getSymbol() + " DW ?\n";
+    log_error("var_decl : type_spec decl_list SEMICOLON\n"); 
+    std::string var = $2.getSymbol() + " DW ?\n";
     printASM(var, 1);
-    variables.push_back(string($2.getSymbol()));
+    variables.push_back(std::string($2.getSymbol()));
     std::string asmCode = "\tMOV AX, " + $2.getSymbol() + "\n";
     asmCode += "\tMOV " + $2.getSymbol() + ", AX\n\n";
+    $$.setCode(asmCode);
 }
 ;
 
 type_spec : INT {
         log_error("type_spec : INT\n");
         }
-          | FLOAT {log_error("type_spec : FLOAT\n");}
-          | DOUBLE {log_error("type_spec : DOUBLE\n");}
+          | FLOAT { log_error("type_spec : FLOAT\n"); }
+          | DOUBLE { log_error("type_spec : DOUBLE\n"); }
           ;
 
-decl_list : term {log_error("dec_list : term\n");}
+decl_list : term { log_error("decl_list : term\n"); }
         ;
 
 expr_decl : term ASSIGNOP expr SEMICOLON  {
     log_error("expr_decl : term ASSIGNOP expr SEMICOLON\n");
-    // char* str = newTemp();
-    // Symbol_Info obj(str, "TempID");
-    // $$ = obj;
     printIR($1.getSymbol() + " = " + $3.getSymbol() + ";\n");
     std::string asmCode = "\tMOV AX, " + $3.getSymbol() + "\n";
     asmCode += "\tMOV " + $1.getSymbol() + ", AX\n\n";
+    
+    $$.setCode(asmCode);
     printASM(asmCode);
     }   
 ;
+
+conditional: IF LPAREN expr RPAREN LCURL stmt_list RCURL { log_error("conditional : IF LPAREN expr RPAREN LCURL stmt_list RCURL\n"); }
+            | IF LPAREN expr RPAREN LCURL stmt_list RCURL ELSE LCURL stmt_list RCURL { log_error("conditional : IF LPAREN expr RPAREN LCURL stmt_list RCURL ELSE LCURL stmt_list RCURL\n"); }
+           | IF LPAREN expr RPAREN LCURL stmt_list RCURL ELIF LPAREN expr RPAREN LCURL stmt_list RCURL { log_error("conditional : IF LPAREN expr RPAREN LCURL stmt_list RCURL ELIF LPAREN expr RPAREN LCURL stmt_list RCURL\n"); }
+           ;
+
+func_decl : type_spec term LPAREN param_list RPAREN LCURL stmt_list RCURL {
+    log_error("func_decl : type_spec ID LPAREN param_list RPAREN LCURL stmt_list RCURL\n");
+    std::string asmCode = $2.getSymbol() + " PROC\n";
+    asmCode += $7.getCode();
+    asmCode += $2.getSymbol() + " ENDP\n";
+    printASM(asmCode, 2);
+}
+| type_spec term SEMICOLON {
+    log_error("func_decl : type_spec ID SEMICOLON\n");
+}
+;
+
+param_list : param_list COMMA param { log_error("param_list : param_list COMMA param\n"); }
+           | param { log_error("param_list : param\n"); }
+           | /* empty */ { log_error("param_list : /* empty */\n"); }
+           ;
+
+param : type_spec ID { log_error("param : type_spec ID\n"); }
+      ;
+
+func_call : ID LPAREN arg_list RPAREN SEMICOLON {
+    log_error("func_call : ID LPAREN arg_list RPAREN SEMICOLON\n");
+    std::string asmCode = "\tCALL " + $1.getSymbol() + "\n";
+    printASM(asmCode, 2);
+}
+;
+
+arg_list : arg_list COMMA expr { log_error("arg_list : arg_list COMMA expr\n"); }
+         | expr { log_error("arg_list : expr\n"); }
+         | /* empty */ { log_error("arg_list : /* empty */\n"); }
+         ;
 
 expr : CONST_INT   { log_error("expr : CONST_INT \n"); }
      | CONST_FLOAT { log_error("expr : CONST_FLOAT \n"); }
@@ -154,6 +250,7 @@ expr : CONST_INT   { log_error("expr : CONST_INT \n"); }
 
         char* str = newTemp();
         Symbol_Info obj(str, "TempID");
+        obj.setCode(asmCode);
         $$ = obj;  
         printIR($$.getSymbol() + " = " + $1.getSymbol() + " * " + $3.getSymbol() + "\n");
         
@@ -169,6 +266,7 @@ expr : CONST_INT   { log_error("expr : CONST_INT \n"); }
 
         char* str = newTemp();
         Symbol_Info obj(str, "TempID");
+        obj.setCode(asmCode);
         $$ = obj;
         printIR($$.getSymbol() + " = " + $1.getSymbol() + " / " + $3.getSymbol() + "\n");
         printASM(asmCode);
@@ -182,6 +280,7 @@ expr : CONST_INT   { log_error("expr : CONST_INT \n"); }
         asmCode += "\tADD AX, BX\n";
         asmCode += "\tMOV " + $$.getSymbol() + ", AX\n\n";
 
+        obj.setCode(asmCode);
         $$ = obj;  
         printIR($$.getSymbol() + " = " + $1.getSymbol() + " + " + $3.getSymbol() + "\n");
         printASM(asmCode);
@@ -195,7 +294,10 @@ expr : CONST_INT   { log_error("expr : CONST_INT \n"); }
         asmCode += "\tSUB AX, BX\n";
         asmCode += "\tMOV " + $$.getSymbol() + ", AX\n\n";
 
+        obj.setCode(asmCode);
+
         $$ = obj;
+        
         printIR($$.getSymbol() + " = " + $1.getSymbol() + " - " + $3.getSymbol() + "\n");
         printASM(asmCode);
      }
@@ -214,34 +316,26 @@ expr : CONST_INT   { log_error("expr : CONST_INT \n"); }
         printASM(asmCode);
         char* str = newTemp();
         Symbol_Info obj(str, "TempID");
+        obj.setCode(asmCode);
         $$ = obj;
         
      }
      | LPAREN expr RPAREN { 
         log_error("expr : LPAREN expr RPAREN  \n");
-        //TODO: UNCOMMENT IF OTHERS ARE DONE 
-        // char* str = newTemp();
-        // Symbol_Info obj(str, "TempID");
-        // $$ = obj;
         printIR($$.getSymbol() + " = " + $2.getSymbol() + "\n");
         std::string asmCode = "\tMOV AX, " + $2.getSymbol() + "\n";
         asmCode += "\tMOV " + $$.getSymbol() + ", AX\n\n";
+        $$.setCode(asmCode);
         printASM(asmCode);
      }
      | term { 
         log_error("expr : term \n"); 
-        // std::string asmCode = "\tMOV AX, " + $1.getSymbol() + "\n";
-        // printASM(asmCode);
-     
-        // char* str = newTemp();
-        // Symbol_Info obj(str, "TempID");
-        // $$ = obj;
         printIR($$.getSymbol() + " = " + $1.getSymbol() + "\n");
      }
      ;
 
 term : ID {
-    Symbol_Info obj(string($1.getSymbol()), "ID");
+    Symbol_Info obj(std::string($1.getSymbol()), "ID");
     if (!(st.insert(obj))) {
         fprintf(yyout, "%s is already declared\n", $1.getSymbol().c_str());
     } else {
@@ -256,7 +350,7 @@ int main()
 {
     st.clear();
     clearOutput();
-    string asmCode = ".MODEL SMALL\n";
+    std::string asmCode = ".MODEL SMALL\n";
     asmCode += ".STACK 100H\n";
     asmCode += ".DATA\n";
     printASM(asmCode, 0);
@@ -295,7 +389,6 @@ int main()
             op2.close();
         }
     }
-
 
     return 0;
 }

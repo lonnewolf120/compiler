@@ -93,7 +93,7 @@ char *cvar;
  
 %type <cvar> expr term 
 %type <cvar> ID
-%token LTHIRD RTHIRD LPAREN RPAREN LCURL RCURL COMMA ID ADDOP SUBOP MULOP DIVOP MODOP ASSIGNOP SEMICOLON RELOP INCOP DECOP LOGICOP NOT CONST_INT CONST_FLOAT INT FLOAT DOUBLE CHAR
+%token LTHIRD RTHIRD LPAREN RPAREN LCURL RCURL COMMA ID  ASSIGNOP SEMICOLON RELOP INCOP DECOP LOGICOP NOT CONST_INT CONST_FLOAT INT FLOAT DOUBLE CHAR
 %token IF ELSE FOR WHILE RETURN BREAK CONTINUE VOID
 %type <dvar> CONST_FLOAT
 %type <ivar> CONST_INT 
@@ -102,7 +102,6 @@ char *cvar;
 %left LOGICOP
 %left ADDOP SUBOP
 %left MULOP DIVOP
-
 %right ASSIGNOP 
 
 %%
@@ -115,10 +114,6 @@ stmt : stmt unit { log_error("stmt : stmt unit\n");}
      | unit {log_error("stmt : unit\n"); }
      ;
 
-unit : var_decl  { log_error("unit : var_decl\n"); }
-     | expr_decl  { log_error("unit : expr_decl\n"); }
-     | error {yyerrok;log_error(""); yyerror("syntax error: invalid expression");}
-     ;
 
 func_decl : type_spec term LPAREN RPAREN LCURL stmt RCURL {log_error("func_decl : type_spec term LPAREN RPAREN LCURL stmt RCURL\n"); }
           | type_spec term LPAREN param_list RPAREN LCURL stmt RCURL {log_error("func_decl : type_spec term LPAREN param_list RPAREN LCURL stmt RCURL\n"); }
@@ -139,6 +134,10 @@ mul_stmt : mul_stmt func_decl
 var_decl : type_spec decl_list SEMICOLON {log_error("vardecl : type_spec dec_list SEMICOLON\n"); }
          ;
 
+unit : var_decl { log_error("unit : var_decl NEWLINE\n"); }
+     | expr_decl { log_error("unit : expr_decl NEWLINE\n"); }
+     | error {yyerrok;log_error(""); yyerror("syntax error: invalid expression");}
+     ;
 type_spec : INT {log_error("type_spec : INT\n");}
           | FLOAT {log_error("type_spec : FLOAT\n");}
           | DOUBLE {log_error("type_spec : DOUBLE\n");}
